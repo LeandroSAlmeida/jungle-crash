@@ -1,9 +1,11 @@
+import { Inject, Injectable } from '@nestjs/common';
 import { Money } from '../../domain/value-objects/money';
-import { WalletRepository } from '../../domain/repositories/wallet.repository';
+import { WALLET_REPOSITORY, type WalletRepository } from '../../domain/repositories/wallet.repository';
 import { WalletNotFoundError } from '../../domain/errors/wallet-not-found.error';
 
+@Injectable()
 export class DebitWalletUseCase {
-  constructor(private readonly walletRepository: WalletRepository) {}
+  constructor(@Inject(WALLET_REPOSITORY) private readonly walletRepository: WalletRepository) {}
 
   async execute(playerId: string, amountInCents: number): Promise<void> {
     const wallet = await this.walletRepository.findByPlayerId(playerId);

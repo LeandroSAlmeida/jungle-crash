@@ -1,5 +1,5 @@
 import { Wallet } from '../../../src/domain/entities/wallet';
-import { WalletRepository } from '../../../src/domain/repositories/wallet.repository';
+import type { WalletRepository } from '../../../src/domain/repositories/wallet.repository';
 
 export class InMemoryWalletRepository implements WalletRepository {
   private readonly wallets = new Map<string, Wallet>();
