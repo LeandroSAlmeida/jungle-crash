@@ -1,7 +1,9 @@
 import { Module } from "@nestjs/common";
-import { WalletsController } from "./presentation/controllers/wallets.controller";
+import { MikroOrmModule } from "@mikro-orm/nestjs";
+import mikroOrmConfig from "./infrastructure/persistence/mikro-orm.config";
+import { WalletsModule } from "./wallets.module";
 
 @Module({
-  controllers: [WalletsController],
+  imports: [MikroOrmModule.forRoot(mikroOrmConfig), WalletsModule],
 })
 export class AppModule {}

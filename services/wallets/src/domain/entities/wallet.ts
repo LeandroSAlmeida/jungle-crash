@@ -13,6 +13,10 @@ export class Wallet {
     return new Wallet(randomUUID(), playerId, Money.zero());
   }
 
+  static restore(id: string, playerId: string, balance: Money): Wallet {
+    return new Wallet(id, playerId, balance);
+  }
+
   get id(): string {
     return this._id;
   }

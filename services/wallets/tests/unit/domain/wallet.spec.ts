@@ -47,4 +47,11 @@ describe('Wallet', () => {
     }
     expect(wallet.balance.cents).toBe(100);
   });
+
+  it('restores a wallet with its existing id and balance, without forcing it to zero', () => {
+    const wallet = Wallet.restore('existing-id', 'player-1', Money.fromCents(5000));
+    expect(wallet.id).toBe('existing-id');
+    expect(wallet.playerId).toBe('player-1');
+    expect(wallet.balance.cents).toBe(5000);
+  });
 });
