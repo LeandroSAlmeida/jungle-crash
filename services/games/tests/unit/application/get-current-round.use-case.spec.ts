@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'bun:test';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { GetCurrentRoundUseCase } from '../../../src/application/use-cases/get-current-round.use-case';
 import { CreateRoundUseCase } from '../../../src/application/use-cases/create-round.use-case';
 import { PlaceBetUseCase } from '../../../src/application/use-cases/place-bet.use-case';
@@ -12,7 +13,7 @@ describe('GetCurrentRoundUseCase', () => {
     const roundRepository = new InMemoryRoundRepository();
     const betRepository = new InMemoryBetRepository();
     const round = await new CreateRoundUseCase(roundRepository).execute();
-    await new PlaceBetUseCase(roundRepository, betRepository, new RecordingEventPublisher()).execute(
+    await new PlaceBetUseCase(roundRepository, betRepository, new RecordingEventPublisher(), new EventEmitter2()).execute(
       round.id,
       'player-1',
       5000,

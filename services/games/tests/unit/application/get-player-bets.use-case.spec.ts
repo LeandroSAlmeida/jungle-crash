@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'bun:test';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { GetPlayerBetsUseCase } from '../../../src/application/use-cases/get-player-bets.use-case';
 import { PlaceBetUseCase } from '../../../src/application/use-cases/place-bet.use-case';
 import { CreateRoundUseCase } from '../../../src/application/use-cases/create-round.use-case';
@@ -10,7 +11,7 @@ describe('GetPlayerBetsUseCase', () => {
   it("returns only the given player's bets", async () => {
     const roundRepository = new InMemoryRoundRepository();
     const betRepository = new InMemoryBetRepository();
-    const placeBet = new PlaceBetUseCase(roundRepository, betRepository, new RecordingEventPublisher());
+    const placeBet = new PlaceBetUseCase(roundRepository, betRepository, new RecordingEventPublisher(), new EventEmitter2());
 
     const round = await new CreateRoundUseCase(roundRepository).execute();
     await placeBet.execute(round.id, 'player-1', 5000);

@@ -1,4 +1,5 @@
 import { Injectable, Logger, OnApplicationBootstrap, OnApplicationShutdown } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { MikroORM, RequestContext } from '@mikro-orm/core';
 import { CreateRoundUseCase } from '../../application/use-cases/create-round.use-case';
 import { StartRoundUseCase } from '../../application/use-cases/start-round.use-case';
@@ -19,6 +20,7 @@ export class GameLoopService implements OnApplicationBootstrap, OnApplicationShu
 
   constructor(
     private readonly orm: MikroORM,
+    private readonly eventEmitter: EventEmitter2,
     private readonly createRoundUseCase: CreateRoundUseCase,
     private readonly startRoundUseCase: StartRoundUseCase,
     private readonly crashRoundUseCase: CrashRoundUseCase,
@@ -47,10 +49,17 @@ export class GameLoopService implements OnApplicationBootstrap, OnApplicationShu
   private async playOneRound(): Promise<void> {
     const created = await this.createRoundUseCase.execute();
     this.logger.log(`Round ${created.id} created, betting phase open for ${BETTING_WINDOW_MS}ms`);
+    this.eventEmitter.emit('round.created', {
+      roundId: created.id,
+      hash: created.hash,
+      bettingWindowMs: BETTING_WINDOW_MS,
+    });
     await sleep(BETTING_WINDOW_MS);
 
-    const running = await this.startRoundUseCase.execute(created.id, new Date());
+    const startedAt = new Date();
+    const running = await this.startRoundUseCase.execute(created.id, startedAt);
     this.logger.log(`Round ${running.id} started`);
+    this.eventEmitter.emit('round.started', { roundId: running.id, startedAt: startedAt.toISOString() });
 
     while (this.running) {
       const multiplier = running.currentMultiplierAt(new Date());
@@ -60,8 +69,13 @@ export class GameLoopService implements OnApplicationBootstrap, OnApplicationShu
       await sleep(TICK_INTERVAL_MS);
     }
 
-    await this.crashRoundUseCase.execute(running.id);
-    this.logger.log(`Round ${running.id} crashed`);
+    const crashed = await this.crashRoundUseCase.execute(running.id);
+    this.logger.log(`Round ${crashed.id} crashed`);
+    this.eventEmitter.emit('round.crashed', {
+      roundId: crashed.id,
+      crashPoint: crashed.crashPoint,
+      serverSeed: crashed.serverSeed,
+    });
 
     await sleep(REVEAL_DELAY_MS);
   }

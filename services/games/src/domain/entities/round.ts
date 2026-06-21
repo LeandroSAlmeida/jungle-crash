@@ -10,7 +10,7 @@ export enum RoundPhase {
   CRASHED = 'CRASHED',
 }
 
-const MULTIPLIER_GROWTH_RATE = 0.000062;
+export const MULTIPLIER_GROWTH_RATE = 0.000062;
 
 export class Round {
   private _startedAt: Date | null = null;

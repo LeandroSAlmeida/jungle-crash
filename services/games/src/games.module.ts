@@ -23,6 +23,7 @@ import { GetRoundHistoryUseCase } from './application/use-cases/get-round-histor
 import { VerifyRoundUseCase } from './application/use-cases/verify-round.use-case';
 import { GetPlayerBetsUseCase } from './application/use-cases/get-player-bets.use-case';
 import { GameLoopService } from './infrastructure/scheduling/game-loop.service';
+import { GamesGateway } from './presentation/gateways/games.gateway';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { GameLoopService } from './infrastructure/scheduling/game-loop.service';
     VerifyRoundUseCase,
     GetPlayerBetsUseCase,
     GameLoopService,
+    GamesGateway,
   ],
 })
 export class GamesModule {}
