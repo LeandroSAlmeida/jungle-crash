@@ -40,6 +40,11 @@ export class MikroOrmBetRepository implements BetRepository {
     await this.em.flush();
   }
 
+  async findById(id: string): Promise<Bet | null> {
+    const entity = await this.em.findOne(BetEntity, { id });
+    return entity ? toDomain(entity) : null;
+  }
+
   async findByRoundAndPlayer(roundId: string, playerId: string): Promise<Bet | null> {
     const entity = await this.em.findOne(BetEntity, { roundId, playerId });
     return entity ? toDomain(entity) : null;

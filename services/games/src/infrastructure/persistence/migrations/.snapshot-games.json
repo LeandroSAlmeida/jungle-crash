@@ -86,7 +86,8 @@
           "enumItems": [
             "PENDING",
             "CASHED_OUT",
-            "LOST"
+            "LOST",
+            "REJECTED"
           ],
           "mappedType": "enum"
         },
