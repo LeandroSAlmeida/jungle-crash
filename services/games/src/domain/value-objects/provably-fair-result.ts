@@ -14,6 +14,10 @@ export class ProvablyFairResult {
     return new ProvablyFairResult(serverSeed, hash, crashPoint);
   }
 
+  static restore(serverSeed: string, hash: string, crashPoint: number): ProvablyFairResult {
+    return new ProvablyFairResult(serverSeed, hash, crashPoint);
+  }
+
   static verify(serverSeed: string, expectedHash: string, expectedCrashPoint: number): boolean {
     return (
       ProvablyFairResult.hashOf(serverSeed) === expectedHash &&
