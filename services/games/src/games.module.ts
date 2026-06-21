@@ -22,6 +22,7 @@ import { GetCurrentRoundUseCase } from './application/use-cases/get-current-roun
 import { GetRoundHistoryUseCase } from './application/use-cases/get-round-history.use-case';
 import { VerifyRoundUseCase } from './application/use-cases/verify-round.use-case';
 import { GetPlayerBetsUseCase } from './application/use-cases/get-player-bets.use-case';
+import { GameLoopService } from './infrastructure/scheduling/game-loop.service';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { GetPlayerBetsUseCase } from './application/use-cases/get-player-bets.us
     GetRoundHistoryUseCase,
     VerifyRoundUseCase,
     GetPlayerBetsUseCase,
+    GameLoopService,
   ],
 })
 export class GamesModule {}
