@@ -15,7 +15,7 @@ export class RoundEntity {
   @Property()
   serverSeed!: string;
 
-  @Property({ type: 'float' })
+  @Property({ type: 'double' })
   crashPoint!: number;
 
   @Property({ nullable: true })

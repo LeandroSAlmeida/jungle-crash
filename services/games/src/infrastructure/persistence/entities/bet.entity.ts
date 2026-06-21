@@ -19,6 +19,6 @@ export class BetEntity {
   @Enum(() => BetStatus)
   status!: BetStatus;
 
-  @Property({ type: 'float', nullable: true })
+  @Property({ type: 'double', nullable: true })
   cashoutMultiplier?: number | null;
 }
