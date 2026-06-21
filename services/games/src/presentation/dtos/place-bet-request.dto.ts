@@ -1,3 +1,3 @@
 export class PlaceBetRequestDto {
-  amountInCents: number;
+  amountInCents!: number;
 }

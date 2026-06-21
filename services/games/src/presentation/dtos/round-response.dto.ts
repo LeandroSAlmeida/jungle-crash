@@ -1,9 +1,9 @@
 import { Round, RoundPhase } from '../../domain/entities/round';
 
 export class RoundResponseDto {
-  id: string;
-  phase: RoundPhase;
-  hash: string;
+  id!: string;
+  phase!: RoundPhase;
+  hash!: string;
   crashPoint?: number;
 }
 

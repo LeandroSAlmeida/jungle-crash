@@ -1,11 +1,11 @@
 import { Bet, BetStatus } from '../../domain/entities/bet';
 
 export class BetResponseDto {
-  id: string;
-  roundId: string;
-  playerId: string;
-  amountInCents: number;
-  status: BetStatus;
+  id!: string;
+  roundId!: string;
+  playerId!: string;
+  amountInCents!: number;
+  status!: BetStatus;
   cashoutMultiplier?: number;
   payoutInCents?: number;
 }
