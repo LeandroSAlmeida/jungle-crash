@@ -27,3 +27,5 @@ export const ROUTING_KEYS = {
   BET_DEBIT_FAILED: 'bet.debit_failed',
   BET_CASHED_OUT: 'bet.cashed_out',
 } as const;
+
+export const BETTING_EXCHANGE = 'crash_game.betting';
