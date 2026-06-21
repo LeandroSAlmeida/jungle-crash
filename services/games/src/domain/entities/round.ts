@@ -2,6 +2,7 @@ import { randomUUID } from 'crypto';
 import { ProvablyFairResult } from '../value-objects/provably-fair-result';
 import { InvalidRoundTransitionError } from '../errors/invalid-round-transition.error';
 import { CrashDataNotRevealedError } from '../errors/crash-data-not-revealed.error';
+import { RoundNotRunningError } from '../errors/round-not-running.error';
 
 export enum RoundPhase {
   BETTING = 'BETTING',
@@ -9,7 +10,11 @@ export enum RoundPhase {
   CRASHED = 'CRASHED',
 }
 
+const MULTIPLIER_GROWTH_RATE = 0.000062;
+
 export class Round {
+  private _startedAt: Date | null = null;
+
   private constructor(
     private readonly _id: string,
     private _phase: RoundPhase,
@@ -20,11 +25,20 @@ export class Round {
     return new Round(randomUUID(), RoundPhase.BETTING, ProvablyFairResult.generate());
   }
 
-  start(): void {
+  start(startedAt: Date): void {
     if (this._phase !== RoundPhase.BETTING) {
       throw new InvalidRoundTransitionError(this._phase, RoundPhase.RUNNING);
     }
     this._phase = RoundPhase.RUNNING;
+    this._startedAt = startedAt;
+  }
+
+  currentMultiplierAt(now: Date): number {
+    if (this._phase !== RoundPhase.RUNNING || this._startedAt === null) {
+      throw new RoundNotRunningError();
+    }
+    const elapsedMs = now.getTime() - this._startedAt.getTime();
+    return Math.exp(MULTIPLIER_GROWTH_RATE * elapsedMs);
   }
 
   crash(): void {
