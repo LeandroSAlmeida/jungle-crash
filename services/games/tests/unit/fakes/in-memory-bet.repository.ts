@@ -24,4 +24,9 @@ export class InMemoryBetRepository implements BetRepository {
   async findByRoundId(roundId: string): Promise<Bet[]> {
     return [...this.bets.values()].filter((bet) => bet.roundId === roundId);
   }
+
+  async findByPlayerId(playerId: string, limit: number, offset: number): Promise<Bet[]> {
+    const bets = [...this.bets.values()].filter((bet) => bet.playerId === playerId).reverse();
+    return bets.slice(offset, offset + limit);
+  }
 }
