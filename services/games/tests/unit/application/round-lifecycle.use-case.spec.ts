@@ -8,6 +8,7 @@ import { BetStatus } from '../../../src/domain/entities/bet';
 import { RoundNotFoundError } from '../../../src/domain/errors/round-not-found.error';
 import { InMemoryRoundRepository } from '../fakes/in-memory-round.repository';
 import { InMemoryBetRepository } from '../fakes/in-memory-bet.repository';
+import { RecordingEventPublisher } from '../fakes/recording-event-publisher';
 
 describe('Round lifecycle use cases', () => {
   it('creates a round in the BETTING phase', async () => {
@@ -39,7 +40,11 @@ describe('Round lifecycle use cases', () => {
     const betRepository = new InMemoryBetRepository();
     const round = await new CreateRoundUseCase(roundRepository).execute();
 
-    const bet = await new PlaceBetUseCase(roundRepository, betRepository).execute(round.id, 'player-1', 5000);
+    const bet = await new PlaceBetUseCase(roundRepository, betRepository, new RecordingEventPublisher()).execute(
+      round.id,
+      'player-1',
+      5000,
+    );
     await new StartRoundUseCase(roundRepository).execute(round.id, new Date());
 
     const crashed = await new CrashRoundUseCase(roundRepository, betRepository).execute(round.id);
@@ -55,7 +60,11 @@ describe('Round lifecycle use cases', () => {
     const betRepository = new InMemoryBetRepository();
     const round = await new CreateRoundUseCase(roundRepository).execute();
 
-    const bet = await new PlaceBetUseCase(roundRepository, betRepository).execute(round.id, 'player-1', 5000);
+    const bet = await new PlaceBetUseCase(roundRepository, betRepository, new RecordingEventPublisher()).execute(
+      round.id,
+      'player-1',
+      5000,
+    );
     bet.cashOut(2);
     await betRepository.save(bet);
 
