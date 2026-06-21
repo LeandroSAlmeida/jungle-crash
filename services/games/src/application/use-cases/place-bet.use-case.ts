@@ -1,4 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ROUTING_KEYS, type BetPlacedEvent } from '@crash/contracts';
 import { Bet } from '../../domain/entities/bet';
 import { Money } from '../../domain/value-objects/money';
@@ -15,6 +16,7 @@ export class PlaceBetUseCase {
     @Inject(ROUND_REPOSITORY) private readonly roundRepository: RoundRepository,
     @Inject(BET_REPOSITORY) private readonly betRepository: BetRepository,
     @Inject(EVENT_PUBLISHER) private readonly eventPublisher: EventPublisher,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async execute(roundId: string, playerId: string, amountInCents: number): Promise<Bet> {
@@ -36,6 +38,7 @@ export class PlaceBetUseCase {
 
     const event: BetPlacedEvent = { betId: bet.id, playerId, amountInCents };
     await this.eventPublisher.publish(ROUTING_KEYS.BET_PLACED, event);
+    this.eventEmitter.emit('bet.placed', { roundId, playerId, amountInCents });
 
     return bet;
   }

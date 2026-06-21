@@ -1,4 +1,5 @@
 import { describe, it, expect } from 'bun:test';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 import { ROUTING_KEYS } from '@crash/contracts';
 import { PlaceBetUseCase } from '../../../src/application/use-cases/place-bet.use-case';
 import { CreateRoundUseCase } from '../../../src/application/use-cases/create-round.use-case';
@@ -19,7 +20,7 @@ describe('PlaceBetUseCase', () => {
     const eventPublisher = new RecordingEventPublisher();
     const round = await new CreateRoundUseCase(roundRepository).execute();
 
-    const bet = await new PlaceBetUseCase(roundRepository, betRepository, eventPublisher).execute(
+    const bet = await new PlaceBetUseCase(roundRepository, betRepository, eventPublisher, new EventEmitter2()).execute(
       round.id,
       'player-1',
       5000,
@@ -35,7 +36,7 @@ describe('PlaceBetUseCase', () => {
     const eventPublisher = new RecordingEventPublisher();
     const round = await new CreateRoundUseCase(roundRepository).execute();
 
-    const bet = await new PlaceBetUseCase(roundRepository, betRepository, eventPublisher).execute(
+    const bet = await new PlaceBetUseCase(roundRepository, betRepository, eventPublisher, new EventEmitter2()).execute(
       round.id,
       'player-1',
       5000,
@@ -51,7 +52,7 @@ describe('PlaceBetUseCase', () => {
   it('throws RoundNotFoundError for a round that does not exist', async () => {
     const roundRepository = new InMemoryRoundRepository();
     const betRepository = new InMemoryBetRepository();
-    const useCase = new PlaceBetUseCase(roundRepository, betRepository, new RecordingEventPublisher());
+    const useCase = new PlaceBetUseCase(roundRepository, betRepository, new RecordingEventPublisher(), new EventEmitter2());
 
     await expect(useCase.execute('missing-round', 'player-1', 5000)).rejects.toThrow(RoundNotFoundError);
   });
@@ -62,7 +63,7 @@ describe('PlaceBetUseCase', () => {
     const round = await new CreateRoundUseCase(roundRepository).execute();
     await new StartRoundUseCase(roundRepository).execute(round.id, new Date());
 
-    const useCase = new PlaceBetUseCase(roundRepository, betRepository, new RecordingEventPublisher());
+    const useCase = new PlaceBetUseCase(roundRepository, betRepository, new RecordingEventPublisher(), new EventEmitter2());
     await expect(useCase.execute(round.id, 'player-1', 5000)).rejects.toThrow(RoundNotAcceptingBetsError);
   });
 
@@ -70,7 +71,7 @@ describe('PlaceBetUseCase', () => {
     const roundRepository = new InMemoryRoundRepository();
     const betRepository = new InMemoryBetRepository();
     const round = await new CreateRoundUseCase(roundRepository).execute();
-    const useCase = new PlaceBetUseCase(roundRepository, betRepository, new RecordingEventPublisher());
+    const useCase = new PlaceBetUseCase(roundRepository, betRepository, new RecordingEventPublisher(), new EventEmitter2());
     await useCase.execute(round.id, 'player-1', 5000);
 
     await expect(useCase.execute(round.id, 'player-1', 1000)).rejects.toThrow(AlreadyBetThisRoundError);
@@ -80,7 +81,7 @@ describe('PlaceBetUseCase', () => {
     const roundRepository = new InMemoryRoundRepository();
     const betRepository = new InMemoryBetRepository();
     const round = await new CreateRoundUseCase(roundRepository).execute();
-    const useCase = new PlaceBetUseCase(roundRepository, betRepository, new RecordingEventPublisher());
+    const useCase = new PlaceBetUseCase(roundRepository, betRepository, new RecordingEventPublisher(), new EventEmitter2());
 
     await expect(useCase.execute(round.id, 'player-1', 1)).rejects.toThrow(InvalidBetAmountError);
   });
