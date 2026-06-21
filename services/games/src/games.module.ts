@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
+import { BETTING_EXCHANGE } from '@crash/contracts';
 import { GamesController } from './presentation/controllers/games.controller';
 import { RoundEntity } from './infrastructure/persistence/entities/round.entity';
 import { BetEntity } from './infrastructure/persistence/entities/bet.entity';
@@ -18,7 +20,13 @@ import { CashOutUseCase } from './application/use-cases/cash-out.use-case';
 import { RejectBetUseCase } from './application/use-cases/reject-bet.use-case';
 
 @Module({
-  imports: [MikroOrmModule.forFeature([RoundEntity, BetEntity])],
+  imports: [
+    MikroOrmModule.forFeature([RoundEntity, BetEntity]),
+    RabbitMQModule.forRoot({
+      exchanges: [{ name: BETTING_EXCHANGE, type: 'topic' }],
+      uri: process.env.RABBITMQ_URL ?? '',
+    }),
+  ],
   controllers: [GamesController],
   providers: [
     { provide: ROUND_REPOSITORY, useClass: MikroOrmRoundRepository },
