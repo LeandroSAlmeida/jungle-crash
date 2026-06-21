@@ -3,6 +3,7 @@ import { Round, RoundPhase } from '../../../src/domain/entities/round';
 import { InvalidRoundTransitionError } from '../../../src/domain/errors/invalid-round-transition.error';
 import { CrashDataNotRevealedError } from '../../../src/domain/errors/crash-data-not-revealed.error';
 import { RoundNotRunningError } from '../../../src/domain/errors/round-not-running.error';
+import { ProvablyFairResult } from '../../../src/domain/value-objects/provably-fair-result';
 
 describe('Round', () => {
   it('is created in the BETTING phase, accepting bets, with a public hash', () => {
@@ -87,5 +88,33 @@ describe('Round', () => {
     const round = Round.create();
 
     expect(() => round.currentMultiplierAt(new Date())).toThrow(RoundNotRunningError);
+  });
+
+  it('restores a round from a snapshot, preserving its phase and started time', () => {
+    const startedAt = new Date('2024-01-01T00:00:00.000Z');
+    const original = Round.create();
+    original.start(startedAt);
+    original.crash();
+
+    const snapshot = original.toSnapshot();
+    const restored = Round.restore(
+      snapshot.id,
+      snapshot.phase,
+      ProvablyFairResult.restore(snapshot.serverSeed, snapshot.hash, snapshot.crashPoint),
+      snapshot.startedAt,
+    );
+
+    expect(restored.id).toBe(original.id);
+    expect(restored.phase).toBe(RoundPhase.CRASHED);
+    expect(restored.crashPoint).toBe(original.crashPoint);
+    expect(restored.serverSeed).toBe(original.serverSeed);
+  });
+
+  it('exposes the secret data via toSnapshot even before the round has crashed', () => {
+    const round = Round.create();
+
+    const snapshot = round.toSnapshot();
+    expect(snapshot.serverSeed).toHaveLength(64);
+    expect(snapshot.crashPoint).toBeGreaterThanOrEqual(1);
   });
 });

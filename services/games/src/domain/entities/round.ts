@@ -25,6 +25,35 @@ export class Round {
     return new Round(randomUUID(), RoundPhase.BETTING, ProvablyFairResult.generate());
   }
 
+  static restore(
+    id: string,
+    phase: RoundPhase,
+    provablyFair: ProvablyFairResult,
+    startedAt: Date | null,
+  ): Round {
+    const round = new Round(id, phase, provablyFair);
+    round._startedAt = startedAt;
+    return round;
+  }
+
+  toSnapshot(): {
+    id: string;
+    phase: RoundPhase;
+    hash: string;
+    serverSeed: string;
+    crashPoint: number;
+    startedAt: Date | null;
+  } {
+    return {
+      id: this._id,
+      phase: this._phase,
+      hash: this._provablyFair.hash,
+      serverSeed: this._provablyFair.serverSeed,
+      crashPoint: this._provablyFair.crashPoint,
+      startedAt: this._startedAt,
+    };
+  }
+
   start(startedAt: Date): void {
     if (this._phase !== RoundPhase.BETTING) {
       throw new InvalidRoundTransitionError(this._phase, RoundPhase.RUNNING);

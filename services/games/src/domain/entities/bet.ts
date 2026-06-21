@@ -30,6 +30,17 @@ export class Bet {
     return new Bet(randomUUID(), roundId, playerId, amount, BetStatus.PENDING, null);
   }
 
+  static restore(
+    id: string,
+    roundId: string,
+    playerId: string,
+    amount: Money,
+    status: BetStatus,
+    cashoutMultiplier: number | null,
+  ): Bet {
+    return new Bet(id, roundId, playerId, amount, status, cashoutMultiplier);
+  }
+
   cashOut(multiplier: number): void {
     if (this._status !== BetStatus.PENDING) {
       throw new BetNotPendingError();
