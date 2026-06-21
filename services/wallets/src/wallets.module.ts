@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
+import { AuthModule } from '@crash/auth';
 import { BETTING_EXCHANGE } from '@crash/contracts';
 import { WalletsController } from './presentation/controllers/wallets.controller';
 import { WalletEntity } from './infrastructure/persistence/entities/wallet.entity';
@@ -16,6 +17,7 @@ import { DebitWalletUseCase } from './application/use-cases/debit-wallet.use-cas
 
 @Module({
   imports: [
+    AuthModule,
     MikroOrmModule.forFeature([WalletEntity]),
     RabbitMQModule.forRoot({
       exchanges: [{ name: BETTING_EXCHANGE, type: 'topic' }],

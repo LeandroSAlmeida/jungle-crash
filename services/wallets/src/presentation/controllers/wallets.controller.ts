@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Headers, ConflictException, NotFoundException } from "@nestjs/common";
+import { Controller, Get, Post, UseGuards, ConflictException, NotFoundException } from "@nestjs/common";
+import { JwtAuthGuard, CurrentPlayer } from "@crash/auth";
 import { HealthCheckResponseDto } from "../dtos/health-check-response.dto";
 import { WalletResponseDto } from "../dtos/wallet-response.dto";
 import { CreateWalletUseCase } from "../../application/use-cases/create-wallet.use-case";
@@ -27,8 +28,9 @@ export class WalletsController {
     return { status: "ok", service: "wallets" };
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post()
-  async create(@Headers("x-player-id") playerId: string): Promise<WalletResponseDto> {
+  async create(@CurrentPlayer() playerId: string): Promise<WalletResponseDto> {
     try {
       const wallet = await this.createWalletUseCase.execute(playerId);
       return toResponseDto(wallet);
@@ -40,8 +42,9 @@ export class WalletsController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get("me")
-  async getMine(@Headers("x-player-id") playerId: string): Promise<WalletResponseDto> {
+  async getMine(@CurrentPlayer() playerId: string): Promise<WalletResponseDto> {
     try {
       const wallet = await this.getWalletUseCase.execute(playerId);
       return toResponseDto(wallet);
