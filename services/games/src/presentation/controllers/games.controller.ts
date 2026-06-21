@@ -4,12 +4,13 @@ import {
   ConflictException,
   Controller,
   Get,
-  Headers,
   NotFoundException,
   Param,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
+import { JwtAuthGuard, CurrentPlayer } from '@crash/auth';
 import { HealthCheckResponseDto } from '../dtos/health-check-response.dto';
 import { RoundResponseDto, toRoundResponseDto } from '../dtos/round-response.dto';
 import { BetResponseDto, toBetResponseDto } from '../dtos/bet-response.dto';
@@ -87,9 +88,10 @@ export class GamesController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Get('bets/me')
   async getMyBets(
-    @Headers('x-player-id') playerId: string,
+    @CurrentPlayer() playerId: string,
     @Query('limit') limit?: string,
     @Query('offset') offset?: string,
   ): Promise<BetResponseDto[]> {
@@ -101,9 +103,10 @@ export class GamesController {
     return bets.map(toBetResponseDto);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('bet')
   async placeBet(
-    @Headers('x-player-id') playerId: string,
+    @CurrentPlayer() playerId: string,
     @Body() body: PlaceBetRequestDto,
   ): Promise<BetResponseDto> {
     try {
@@ -124,8 +127,9 @@ export class GamesController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('bet/cashout')
-  async cashOut(@Headers('x-player-id') playerId: string): Promise<BetResponseDto> {
+  async cashOut(@CurrentPlayer() playerId: string): Promise<BetResponseDto> {
     try {
       const { round } = await this.getCurrentRoundUseCase.execute();
       const bet = await this.cashOutUseCase.execute(round.id, playerId);

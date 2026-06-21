@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
+import { AuthModule } from '@crash/auth';
 import { BETTING_EXCHANGE } from '@crash/contracts';
 import { GamesController } from './presentation/controllers/games.controller';
 import { RoundEntity } from './infrastructure/persistence/entities/round.entity';
@@ -27,6 +28,7 @@ import { GamesGateway } from './presentation/gateways/games.gateway';
 
 @Module({
   imports: [
+    AuthModule,
     MikroOrmModule.forFeature([RoundEntity, BetEntity]),
     RabbitMQModule.forRoot({
       exchanges: [{ name: BETTING_EXCHANGE, type: 'topic' }],
