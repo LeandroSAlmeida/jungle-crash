@@ -27,7 +27,7 @@ export class WalletsController {
     return { status: "ok", service: "wallets" };
   }
 
-  @Post("wallets")
+  @Post()
   async create(@Headers("x-player-id") playerId: string): Promise<WalletResponseDto> {
     try {
       const wallet = await this.createWalletUseCase.execute(playerId);
@@ -40,7 +40,7 @@ export class WalletsController {
     }
   }
 
-  @Get("wallets/me")
+  @Get("me")
   async getMine(@Headers("x-player-id") playerId: string): Promise<WalletResponseDto> {
     try {
       const wallet = await this.getWalletUseCase.execute(playerId);
