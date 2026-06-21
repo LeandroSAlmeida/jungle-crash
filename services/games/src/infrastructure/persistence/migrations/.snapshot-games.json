@@ -86,25 +86,26 @@
           "enumItems": [
             "PENDING",
             "CASHED_OUT",
-            "LOST"
+            "LOST",
+            "REJECTED"
           ],
           "mappedType": "enum"
         },
         "cashout_multiplier": {
           "name": "cashout_multiplier",
-          "type": "float4",
+          "type": "float8",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
           "unique": false,
           "length": null,
-          "precision": 24,
+          "precision": 53,
           "scale": null,
           "default": null,
           "comment": null,
           "enumItems": [],
-          "mappedType": "float"
+          "mappedType": "double"
         }
       },
       "name": "bets",
@@ -209,19 +210,19 @@
         },
         "crash_point": {
           "name": "crash_point",
-          "type": "float4",
+          "type": "float8",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
           "unique": false,
           "length": null,
-          "precision": 24,
+          "precision": 53,
           "scale": null,
           "default": null,
           "comment": null,
           "enumItems": [],
-          "mappedType": "float"
+          "mappedType": "double"
         },
         "started_at": {
           "name": "started_at",

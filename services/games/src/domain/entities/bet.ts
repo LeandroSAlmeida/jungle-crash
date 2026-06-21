@@ -8,6 +8,7 @@ export enum BetStatus {
   PENDING = 'PENDING',
   CASHED_OUT = 'CASHED_OUT',
   LOST = 'LOST',
+  REJECTED = 'REJECTED',
 }
 
 export class Bet {
@@ -54,6 +55,13 @@ export class Bet {
       throw new BetNotPendingError();
     }
     this._status = BetStatus.LOST;
+  }
+
+  reject(): void {
+    if (this._status !== BetStatus.PENDING) {
+      throw new BetNotPendingError();
+    }
+    this._status = BetStatus.REJECTED;
   }
 
   get id(): string {

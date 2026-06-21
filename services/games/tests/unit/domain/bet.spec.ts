@@ -64,4 +64,18 @@ describe('Bet', () => {
 
     expect(() => bet.payout).toThrow(BetNotCashedOutError);
   });
+
+  it('rejects a pending bet as a compensating action', () => {
+    const bet = Bet.place('round-1', 'player-1', Money.fromCents(5000));
+    bet.reject();
+
+    expect(bet.status).toBe(BetStatus.REJECTED);
+  });
+
+  it('rejects rejecting a bet that is not pending', () => {
+    const bet = Bet.place('round-1', 'player-1', Money.fromCents(5000));
+    bet.cashOut(2);
+
+    expect(() => bet.reject()).toThrow(BetNotPendingError);
+  });
 });

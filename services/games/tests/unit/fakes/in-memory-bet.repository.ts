@@ -8,6 +8,10 @@ export class InMemoryBetRepository implements BetRepository {
     this.bets.set(bet.id, bet);
   }
 
+  async findById(id: string): Promise<Bet | null> {
+    return this.bets.get(id) ?? null;
+  }
+
   async findByRoundAndPlayer(roundId: string, playerId: string): Promise<Bet | null> {
     for (const bet of this.bets.values()) {
       if (bet.roundId === roundId && bet.playerId === playerId) {
