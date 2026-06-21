@@ -20,4 +20,9 @@ export class InMemoryRoundRepository implements RoundRepository {
     }
     return null;
   }
+
+  async findHistory(limit: number, offset: number): Promise<Round[]> {
+    const crashed = [...this.rounds.values()].filter((round) => round.phase === RoundPhase.CRASHED).reverse();
+    return crashed.slice(offset, offset + limit);
+  }
 }

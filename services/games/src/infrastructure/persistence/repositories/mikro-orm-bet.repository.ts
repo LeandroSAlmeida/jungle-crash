@@ -34,6 +34,7 @@ export class MikroOrmBetRepository implements BetRepository {
         amountInCents: bet.amount.cents,
         status: bet.status,
         cashoutMultiplier: bet.cashoutMultiplier ?? undefined,
+        createdAt: new Date(),
       });
     }
 
@@ -52,6 +53,11 @@ export class MikroOrmBetRepository implements BetRepository {
 
   async findByRoundId(roundId: string): Promise<Bet[]> {
     const entities = await this.em.find(BetEntity, { roundId });
+    return entities.map(toDomain);
+  }
+
+  async findByPlayerId(playerId: string, limit: number, offset: number): Promise<Bet[]> {
+    const entities = await this.em.find(BetEntity, { playerId }, { orderBy: { createdAt: 'desc' }, limit, offset });
     return entities.map(toDomain);
   }
 }

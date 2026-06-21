@@ -48,4 +48,13 @@ export class MikroOrmRoundRepository implements RoundRepository {
     const entity = await this.em.findOne(RoundEntity, { phase: { $ne: RoundPhase.CRASHED } });
     return entity ? toDomain(entity) : null;
   }
+
+  async findHistory(limit: number, offset: number): Promise<Round[]> {
+    const entities = await this.em.find(
+      RoundEntity,
+      { phase: RoundPhase.CRASHED },
+      { orderBy: { startedAt: 'desc' }, limit, offset },
+    );
+    return entities.map(toDomain);
+  }
 }

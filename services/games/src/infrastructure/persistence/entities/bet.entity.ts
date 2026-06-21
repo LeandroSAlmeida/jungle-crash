@@ -21,4 +21,7 @@ export class BetEntity {
 
   @Property({ type: 'double', nullable: true })
   cashoutMultiplier?: number | null;
+
+  @Property()
+  createdAt!: Date;
 }

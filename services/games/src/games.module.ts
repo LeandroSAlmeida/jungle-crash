@@ -18,6 +18,10 @@ import { CrashRoundUseCase } from './application/use-cases/crash-round.use-case'
 import { PlaceBetUseCase } from './application/use-cases/place-bet.use-case';
 import { CashOutUseCase } from './application/use-cases/cash-out.use-case';
 import { RejectBetUseCase } from './application/use-cases/reject-bet.use-case';
+import { GetCurrentRoundUseCase } from './application/use-cases/get-current-round.use-case';
+import { GetRoundHistoryUseCase } from './application/use-cases/get-round-history.use-case';
+import { VerifyRoundUseCase } from './application/use-cases/verify-round.use-case';
+import { GetPlayerBetsUseCase } from './application/use-cases/get-player-bets.use-case';
 
 @Module({
   imports: [
@@ -39,6 +43,10 @@ import { RejectBetUseCase } from './application/use-cases/reject-bet.use-case';
     PlaceBetUseCase,
     CashOutUseCase,
     RejectBetUseCase,
+    GetCurrentRoundUseCase,
+    GetRoundHistoryUseCase,
+    VerifyRoundUseCase,
+    GetPlayerBetsUseCase,
   ],
 })
 export class GamesModule {}

@@ -23,7 +23,7 @@ describe('Wallets (e2e)', () => {
     const playerId = `player-${Date.now()}-1`;
 
     const response = await request(app.getHttpServer())
-      .post('/wallets')
+      .post('/')
       .set('x-player-id', playerId)
       .expect(201);
 
@@ -33,17 +33,17 @@ describe('Wallets (e2e)', () => {
 
   it('rejects creating a duplicate wallet for the same player', async () => {
     const playerId = `player-${Date.now()}-2`;
-    await request(app.getHttpServer()).post('/wallets').set('x-player-id', playerId).expect(201);
+    await request(app.getHttpServer()).post('/').set('x-player-id', playerId).expect(201);
 
-    await request(app.getHttpServer()).post('/wallets').set('x-player-id', playerId).expect(409);
+    await request(app.getHttpServer()).post('/').set('x-player-id', playerId).expect(409);
   });
 
-  it('returns the wallet via GET /wallets/me', async () => {
+  it('returns the wallet via GET /me', async () => {
     const playerId = `player-${Date.now()}-3`;
-    await request(app.getHttpServer()).post('/wallets').set('x-player-id', playerId).expect(201);
+    await request(app.getHttpServer()).post('/').set('x-player-id', playerId).expect(201);
 
     const response = await request(app.getHttpServer())
-      .get('/wallets/me')
+      .get('/me')
       .set('x-player-id', playerId)
       .expect(200);
 
@@ -52,7 +52,7 @@ describe('Wallets (e2e)', () => {
 
   it('returns 404 when the player has no wallet', async () => {
     await request(app.getHttpServer())
-      .get('/wallets/me')
+      .get('/me')
       .set('x-player-id', `player-${Date.now()}-missing`)
       .expect(404);
   });
