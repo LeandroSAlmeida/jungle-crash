@@ -1,0 +1,84 @@
+@import url("https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=JetBrains+Mono:wght@400;500;700&display=swap");
+
+:root {
+  --keycloak-card-top-color: #6dc532;
+}
+
+.login-pf body {
+  background: radial-gradient(ellipse 100% 80% at 50% 110%, #091808 0%, #060a0d 55%, #04070b 100%) !important;
+  font-family: "JetBrains Mono", monospace;
+}
+
+.pf-v5-c-login {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.pf-v5-c-login__container {
+  position: relative;
+  margin-top: 2.5rem;
+}
+
+.pf-v5-c-login__main {
+  background: rgba(8, 13, 17, 0.97);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.7), 0 0 40px rgba(109, 197, 50, 0.04) inset;
+  border-radius: 0.6rem;
+}
+
+.pf-v5-c-login__main-header {
+  border-top: 4px solid #6dc532;
+}
+
+#kc-header-wrapper.pf-v5-c-brand {
+  position: absolute;
+  top: -4.5rem;
+  left: 50%;
+  background: url("../img/logo.svg") no-repeat center center;
+  background-size: contain;
+  height: 120px;
+  width: 120px;
+  margin: 0;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 0 10px rgba(109, 197, 50, 0.8));
+  font-size: 0 !important;
+  color: transparent !important;
+}
+
+.pf-v5-c-title,
+.pf-v5-c-login__main-header h1,
+.pf-v5-c-login__main-body label,
+.pf-v5-c-form__label-text {
+  color: #b8d4c0 !important;
+  font-family: "Orbitron", monospace;
+}
+
+.pf-v5-c-form-control,
+.pf-v5-c-form-control input {
+  background-color: #0e181e !important;
+  border-color: #14261a !important;
+  color: #b8d4c0 !important;
+}
+
+.pf-v5-c-form-control:focus {
+  border-color: #6dc532 !important;
+  box-shadow: 0 0 0 1px #6dc532 !important;
+}
+
+.pf-v5-c-button.pf-m-primary {
+  background: linear-gradient(135deg, #6dc532 0%, #00d46a 100%) !important;
+  color: #031a0c !important;
+  font-family: "Orbitron", monospace;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  border: none;
+  box-shadow: 0 0 12px rgba(109, 197, 50, 0.3);
+}
+
+.pf-v5-c-button.pf-m-primary:hover {
+  background: linear-gradient(135deg, #7dd542 0%, #10e47a 100%) !important;
+}
+
+a {
+  color: #6dc532 !important;
+}
