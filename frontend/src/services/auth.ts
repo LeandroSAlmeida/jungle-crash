@@ -5,7 +5,10 @@ const CLIENT_ID = import.meta.env.VITE_KEYCLOAK_CLIENT_ID;
 const AUTH_ENDPOINT = `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/auth`;
 const TOKEN_ENDPOINT = `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/token`;
 const LOGOUT_ENDPOINT = `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/logout`;
-const REDIRECT_URI = `${window.location.origin}/callback`;
+
+function redirectUri(): string {
+  return `${window.location.origin}/callback`;
+}
 
 const CODE_VERIFIER_KEY = "auth.code_verifier";
 const ACCESS_TOKEN_KEY = "auth.access_token";
@@ -22,7 +25,7 @@ interface AccessTokenClaims {
   preferred_username?: string;
 }
 
-function base64UrlEncode(bytes: Uint8Array): string {
+export function base64UrlEncode(bytes: Uint8Array): string {
   return btoa(String.fromCharCode(...bytes))
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
@@ -42,7 +45,7 @@ export async function login(): Promise<void> {
 
   const params = new URLSearchParams({
     client_id: CLIENT_ID,
-    redirect_uri: REDIRECT_URI,
+    redirect_uri: redirectUri(),
     response_type: "code",
     scope: "openid",
     code_challenge: challenge,
@@ -65,7 +68,7 @@ export async function handleCallback(code: string): Promise<void> {
     body: new URLSearchParams({
       grant_type: "authorization_code",
       client_id: CLIENT_ID,
-      redirect_uri: REDIRECT_URI,
+      redirect_uri: redirectUri(),
       code,
       code_verifier: verifier,
     }),
