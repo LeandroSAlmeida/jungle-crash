@@ -32,6 +32,15 @@ interface WalletResponseDto {
   balanceInCents: number;
 }
 
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    public readonly status: number,
+  ) {
+    super(message);
+  }
+}
+
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const token = getAccessToken();
   const response = await fetch(`${API_BASE_URL}${path}`, {
@@ -45,7 +54,7 @@ async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
 
   if (!response.ok) {
     const body = await response.json().catch(() => ({ message: response.statusText }));
-    throw new Error(body.message ?? `Request failed with status ${response.status}`);
+    throw new ApiError(body.message ?? `Request failed with status ${response.status}`, response.status);
   }
 
   return response.json() as Promise<T>;
@@ -69,4 +78,8 @@ export function cashOut(): Promise<BetResponseDto> {
 
 export function getWallet(): Promise<WalletResponseDto> {
   return apiFetch("/wallets/me");
+}
+
+export function createWallet(): Promise<WalletResponseDto> {
+  return apiFetch("/wallets", { method: "POST" });
 }

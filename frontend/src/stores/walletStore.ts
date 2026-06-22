@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import { getWallet } from "../services/api";
+import { toast } from "sonner";
+import { ApiError, createWallet, getWallet } from "../services/api";
 
 interface WalletState {
   balanceInCents: number | null;
@@ -10,7 +11,16 @@ export const useWalletStore = create<WalletState>((set) => ({
   balanceInCents: null,
 
   refresh: async () => {
-    const wallet = await getWallet();
-    set({ balanceInCents: wallet.balanceInCents });
+    try {
+      const wallet = await getWallet();
+      set({ balanceInCents: wallet.balanceInCents });
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 404) {
+        const wallet = await createWallet();
+        set({ balanceInCents: wallet.balanceInCents });
+        return;
+      }
+      toast.error("Não foi possível carregar seu saldo. Verifique sua conexão.");
+    }
   },
 }));
