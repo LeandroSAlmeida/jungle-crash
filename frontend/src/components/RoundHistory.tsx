@@ -3,6 +3,7 @@ import type { RoundResponseDto } from "../services/api";
 interface RoundHistoryProps {
   history: RoundResponseDto[];
   limit?: number;
+  wrap?: boolean;
 }
 
 function pillColor(v: number) {
@@ -12,9 +13,9 @@ function pillColor(v: number) {
   return { text: "#00E5FF", bg: "rgba(0,229,255,0.12)", border: "rgba(0,229,255,0.35)" };
 }
 
-export function RoundHistory({ history, limit = 12 }: RoundHistoryProps) {
+export function RoundHistory({ history, limit = 12, wrap = true }: RoundHistoryProps) {
   return (
-    <div className="flex flex-wrap gap-1.5">
+    <div className={wrap ? "flex flex-wrap gap-1.5" : "flex flex-nowrap gap-1.5"}>
       {history.slice(0, limit).map((round) => {
         if (round.crashPoint === undefined) {
           return null;
@@ -23,7 +24,7 @@ export function RoundHistory({ history, limit = 12 }: RoundHistoryProps) {
         return (
           <span
             key={round.id}
-            className="text-[9px] font-bold px-1.5 py-0.5 rounded"
+            className="text-[9px] font-bold px-1.5 py-0.5 rounded shrink-0"
             style={{ color: c.text, background: c.bg, border: `1px solid ${c.border}` }}
           >
             {round.crashPoint.toFixed(2)}x

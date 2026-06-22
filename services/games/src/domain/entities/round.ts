@@ -106,6 +106,10 @@ export class Round {
     return this._provablyFair.hash;
   }
 
+  get startedAt(): Date | null {
+    return this._startedAt;
+  }
+
   get previousRoundId(): string | null {
     return this._previousRoundId;
   }

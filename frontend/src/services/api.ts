@@ -9,6 +9,8 @@ export interface RoundResponseDto {
   phase: RoundPhase;
   hash: string;
   crashPoint?: number;
+  startedAt?: string;
+  growthRate?: number;
 }
 
 export type BetStatus = "PENDING" | "CASHED_OUT" | "LOST" | "REJECTED";

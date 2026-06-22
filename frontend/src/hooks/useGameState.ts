@@ -74,6 +74,10 @@ export function useGameState(): GameState {
       if (cancelled) {
         return;
       }
+      if (round.phase === "RUNNING" && round.startedAt) {
+        startedAtRef.current = new Date(round.startedAt).getTime();
+        growthRateRef.current = round.growthRate ?? growthRateRef.current;
+      }
       setState((prev) => ({
         ...prev,
         roundId: round.id,
