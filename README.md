@@ -98,6 +98,12 @@ O cashout segue o caminho inverso: `Game` marca a aposta como `CASHED_OUT` e pub
 
 ---
 
+## Bônus implementados
+
+- **Auto cashout** — o jogador define um multiplicador alvo nos controles de aposta; o saque é disparado automaticamente assim que o multiplicador em tempo real (já sincronizado via WebSocket) atinge esse valor. Resolvido inteiramente no frontend, chamando o mesmo endpoint de cashout do saque manual — não precisou de nenhuma mudança no backend.
+- **Fórmula da curva na UI** — o gráfico do crash exibe `multiplicador = e^(0.000062 × ms)`, a mesma fórmula usada no cálculo real.
+- **Swagger/OpenAPI** — ambos os serviços expõem documentação interativa em `/docs`, com autenticação Bearer configurada.
+
 ## Testes
 
 Cobertura obrigatória do desafio, mais alguns cenários que apareceram ao longo do desenvolvimento:

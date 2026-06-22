@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Shield, Clock } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { Shield, Clock, Zap } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "./ui/button";
 import type { RoundPhase } from "../services/api";
@@ -20,6 +20,8 @@ interface BetControlsProps {
 export function BetControls({ phase, multiplier, countdownMs, myBet, balanceInCents, onBet, onCashout }: BetControlsProps) {
   const [amount, setAmount] = useState("50");
   const [pending, setPending] = useState(false);
+  const [autoCashoutTarget, setAutoCashoutTarget] = useState("");
+  const autoTriggeredRef = useRef(false);
 
   const canBet = phase === "BETTING" && !myBet && !pending;
   const canCashout = phase === "RUNNING" && myBet?.status === "PENDING" && !pending;
@@ -60,6 +62,24 @@ export function BetControls({ phase, multiplier, countdownMs, myBet, balanceInCe
       setPending(false);
     }
   };
+
+  useEffect(() => {
+    if (myBet?.status !== "PENDING") {
+      autoTriggeredRef.current = false;
+    }
+  }, [myBet?.status, myBet?.playerId]);
+
+  useEffect(() => {
+    const target = parseFloat(autoCashoutTarget);
+    if (autoTriggeredRef.current || !canCashout || isNaN(target) || target <= 1) {
+      return;
+    }
+    if (liveMultiplier >= target) {
+      autoTriggeredRef.current = true;
+      handleCashout();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [liveMultiplier, canCashout, autoCashoutTarget]);
 
   const countdownSeconds = Math.ceil(countdownMs / 1000);
 
@@ -109,6 +129,27 @@ export function BetControls({ phase, multiplier, countdownMs, myBet, balanceInCe
         ))}
       </div>
 
+      <div>
+        <div className="text-[9px] text-muted-foreground/50 uppercase tracking-widest mb-1.5 flex items-center gap-1">
+          <Zap size={9} />
+          Auto Cashout (opcional)
+        </div>
+        <div className="relative rounded overflow-hidden" style={{ background: "rgba(109,197,50,0.04)", border: "1px solid rgba(109,197,50,0.12)" }}>
+          <input
+            type="number"
+            value={autoCashoutTarget}
+            onChange={(e) => setAutoCashoutTarget(e.target.value)}
+            min="1.01"
+            step="0.1"
+            placeholder="ex: 2.00"
+            disabled={pending}
+            className="w-full bg-transparent text-sm font-bold px-3 py-2 focus:outline-none disabled:opacity-30 transition-opacity tabular-nums"
+            style={{ color: "#6DC532", fontFamily: "'Orbitron', monospace" }}
+          />
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground/50 text-xs">x</span>
+        </div>
+      </div>
+
       {canCashout ? (
         <Button variant="cashout" onClick={handleCashout}>
           SACAR · R$ {((potentialWinCents ?? 0) / 100).toFixed(2)}
@@ -137,6 +178,9 @@ export function BetControls({ phase, multiplier, countdownMs, myBet, balanceInCe
         {canCashout && potentialWinCents !== null && (
           <span className="text-[9px] text-emerald-400/60">
             Ganho potencial · <strong className="text-emerald-400">R$ {(potentialWinCents / 100).toFixed(2)}</strong>
+            {!isNaN(parseFloat(autoCashoutTarget)) && parseFloat(autoCashoutTarget) > 1 && (
+              <> · auto @ {parseFloat(autoCashoutTarget).toFixed(2)}x</>
+            )}
           </span>
         )}
         {myBet?.status === "CASHED_OUT" && myBet.payoutInCents !== undefined && (
