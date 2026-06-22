@@ -10,6 +10,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { JwtAuthGuard, CurrentPlayer, CurrentUsername } from '@crash/auth';
 import { HealthCheckResponseDto } from '../dtos/health-check-response.dto';
 import { RoundResponseDto, toRoundResponseDto } from '../dtos/round-response.dto';
@@ -32,6 +33,7 @@ import { BetNotPendingError } from '../../domain/errors/bet-not-pending.error';
 
 const DEFAULT_PAGE_SIZE = 20;
 
+@ApiTags('games')
 @Controller()
 export class GamesController {
   constructor(
@@ -48,6 +50,7 @@ export class GamesController {
     return { status: 'ok', service: 'games' };
   }
 
+  @ApiOperation({ summary: 'Estado da rodada atual, com as apostas em andamento' })
   @Get('rounds/current')
   async getCurrentRound(): Promise<{ round: RoundResponseDto; bets: BetResponseDto[] }> {
     try {
@@ -61,6 +64,7 @@ export class GamesController {
     }
   }
 
+  @ApiOperation({ summary: 'Histórico paginado de rodadas já crashadas' })
   @Get('rounds/history')
   async getRoundHistory(
     @Query('limit') limit?: string,
@@ -73,6 +77,7 @@ export class GamesController {
     return rounds.map(toRoundResponseDto);
   }
 
+  @ApiOperation({ summary: 'Dados de verificação provably fair de uma rodada (hash, seed, encadeamento)' })
   @Get('rounds/:roundId/verify')
   async verifyRound(@Param('roundId') roundId: string) {
     try {
@@ -88,6 +93,8 @@ export class GamesController {
     }
   }
 
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Histórico paginado de apostas do jogador autenticado' })
   @UseGuards(JwtAuthGuard)
   @Get('bets/me')
   async getMyBets(
@@ -103,6 +110,11 @@ export class GamesController {
     return bets.map(toBetResponseDto);
   }
 
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Aposta na rodada atual (só na fase de apostas, uma aposta por rodada)' })
+  @ApiResponse({ status: 201, type: BetResponseDto })
+  @ApiResponse({ status: 400, description: 'Valor de aposta inválido' })
+  @ApiResponse({ status: 409, description: 'Rodada não aceita apostas ou jogador já apostou' })
   @UseGuards(JwtAuthGuard)
   @Post('bet')
   async placeBet(
@@ -128,6 +140,10 @@ export class GamesController {
     }
   }
 
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Saca no multiplicador atual (exige aposta pendente na rodada ativa)' })
+  @ApiResponse({ status: 201, type: BetResponseDto })
+  @ApiResponse({ status: 404, description: 'Sem aposta pendente nesta rodada' })
   @UseGuards(JwtAuthGuard)
   @Post('bet/cashout')
   async cashOut(@CurrentPlayer() playerId: string): Promise<BetResponseDto> {
