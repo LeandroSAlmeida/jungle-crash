@@ -51,6 +51,11 @@ export class MikroOrmRoundRepository implements RoundRepository {
     return entity ? toDomain(entity) : null;
   }
 
+  async findAllActive(): Promise<Round[]> {
+    const entities = await this.em.find(RoundEntity, { phase: { $ne: RoundPhase.CRASHED } });
+    return entities.map(toDomain);
+  }
+
   async findLastCrashed(): Promise<Round | null> {
     const entity = await this.em.findOne(
       RoundEntity,

@@ -52,7 +52,8 @@ services:
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin
       KC_HEALTH_ENABLED: "true"
     volumes:
-      - ./docker/keycloak:/opt/keycloak/data/import:ro
+      - ./docker/keycloak/realm-export.json:/opt/keycloak/data/import/realm-export.json:ro
+      - ./docker/keycloak/themes/crash-game:/opt/keycloak/themes/crash-game:ro
     healthcheck:
       test: ["CMD-SHELL", "exec 3<>/dev/tcp/localhost/9000 && echo -e 'GET /health/ready HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n' >&3 && cat <&3 | grep -q '200'"]
       interval: 10s
@@ -99,8 +100,13 @@ services:
       dockerfile: services/games/Dockerfile
     ports:
       - "4001:4001"
-    env_file:
-      - ./services/games/.env
+    environment:
+      PORT: 4001
+      DATABASE_URL: postgresql://admin:admin@postgres:5432/games
+      RABBITMQ_URL: amqp://admin:admin@rabbitmq:5672
+      KEYCLOAK_ISSUER: http://localhost:8080/realms/crash-game
+      KEYCLOAK_JWKS_URI: http://keycloak:8080/realms/crash-game/protocol/openid-connect/certs
+      CORS_ORIGIN: http://localhost:3000,http://localhost:5173
     depends_on:
       postgres:
         condition: service_healthy
@@ -122,8 +128,14 @@ services:
       dockerfile: services/wallets/Dockerfile
     ports:
       - "4002:4002"
-    env_file:
-      - ./services/wallets/.env
+    environment:
+      PORT: 4002
+      DATABASE_URL: postgresql://admin:admin@postgres:5432/wallets
+      RABBITMQ_URL: amqp://admin:admin@rabbitmq:5672
+      KEYCLOAK_ISSUER: http://localhost:8080/realms/crash-game
+      KEYCLOAK_JWKS_URI: http://keycloak:8080/realms/crash-game/protocol/openid-connect/certs
+      KEYCLOAK_INTERNAL_ISSUER: http://keycloak:8080/realms/crash-game
+      CORS_ORIGIN: http://localhost:3000,http://localhost:5173
     depends_on:
       postgres:
         condition: service_healthy
@@ -143,8 +155,10 @@ services:
     build:
       context: .
       dockerfile: services/wallets/Dockerfile
-    env_file:
-      - ./services/wallets/.env
+    environment:
+      DATABASE_URL: postgresql://admin:admin@postgres:5432/wallets
+      RABBITMQ_URL: amqp://admin:admin@rabbitmq:5672
+      KEYCLOAK_INTERNAL_ISSUER: http://keycloak:8080/realms/crash-game
     command: ["bun", "run", "src/scripts/seed-test-user.ts"]
     restart: "no"
     depends_on:
@@ -154,16 +168,21 @@ services:
         condition: service_healthy
 
   # ---------------------------------------------------------------------------
-  # Frontend (placeholder — candidate implements)
+  # Frontend
   # ---------------------------------------------------------------------------
-  # frontend:
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "3000:3000"
-  #   depends_on:
-  #     - kong
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      VITE_KEYCLOAK_URL: http://localhost:8080
+      VITE_KEYCLOAK_REALM: crash-game
+      VITE_KEYCLOAK_CLIENT_ID: crash-game-client
+      VITE_API_BASE_URL: http://localhost:8000
+    depends_on:
+      - kong
 
 volumes:
   postgres_data:
