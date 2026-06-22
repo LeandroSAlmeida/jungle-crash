@@ -14,6 +14,25 @@ describe('Round', () => {
     expect(round.hash).toHaveLength(64);
   });
 
+  it('has no previous round when it is the first in the chain', () => {
+    const round = Round.create();
+
+    expect(round.previousRoundId).toBeNull();
+  });
+
+  it('derives its seed from the previous round when chained', () => {
+    const first = Round.create();
+    first.start(new Date());
+    first.crash();
+
+    const second = Round.create({ id: first.id, serverSeed: first.serverSeed });
+
+    expect(second.previousRoundId).toBe(first.id);
+    second.start(new Date());
+    second.crash();
+    expect(ProvablyFairResult.verifyChainLink(first.serverSeed, second.serverSeed)).toBe(true);
+  });
+
   it('transitions from BETTING to RUNNING', () => {
     const round = Round.create();
     round.start(new Date());
@@ -102,6 +121,7 @@ describe('Round', () => {
       snapshot.phase,
       ProvablyFairResult.restore(snapshot.serverSeed, snapshot.hash, snapshot.crashPoint),
       snapshot.startedAt,
+      snapshot.previousRoundId,
     );
 
     expect(restored.id).toBe(original.id);

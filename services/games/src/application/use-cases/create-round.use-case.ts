@@ -7,7 +7,10 @@ export class CreateRoundUseCase {
   constructor(@Inject(ROUND_REPOSITORY) private readonly roundRepository: RoundRepository) {}
 
   async execute(): Promise<Round> {
-    const round = Round.create();
+    const previousRound = await this.roundRepository.findLastCrashed();
+    const round = Round.create(
+      previousRound ? { id: previousRound.id, serverSeed: previousRound.serverSeed } : undefined,
+    );
     await this.roundRepository.save(round);
     return round;
   }

@@ -7,8 +7,10 @@ export class ProvablyFairResult {
     private readonly _crashPoint: number,
   ) {}
 
-  static generate(): ProvablyFairResult {
-    const serverSeed = randomBytes(32).toString('hex');
+  static generate(previousServerSeed?: string): ProvablyFairResult {
+    const serverSeed = previousServerSeed
+      ? ProvablyFairResult.hashOf(previousServerSeed)
+      : randomBytes(32).toString('hex');
     const hash = ProvablyFairResult.hashOf(serverSeed);
     const crashPoint = ProvablyFairResult.deriveCrashPoint(serverSeed);
     return new ProvablyFairResult(serverSeed, hash, crashPoint);
@@ -23,6 +25,10 @@ export class ProvablyFairResult {
       ProvablyFairResult.hashOf(serverSeed) === expectedHash &&
       ProvablyFairResult.deriveCrashPoint(serverSeed) === expectedCrashPoint
     );
+  }
+
+  static verifyChainLink(previousServerSeed: string, serverSeed: string): boolean {
+    return ProvablyFairResult.hashOf(previousServerSeed) === serverSeed;
   }
 
   private static hashOf(serverSeed: string): string {

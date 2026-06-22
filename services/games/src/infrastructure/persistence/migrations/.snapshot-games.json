@@ -271,6 +271,22 @@
           "comment": null,
           "enumItems": [],
           "mappedType": "datetime"
+        },
+        "previous_round_id": {
+          "name": "previous_round_id",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": 255,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "string"
         }
       },
       "name": "rounds",

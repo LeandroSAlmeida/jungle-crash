@@ -22,6 +22,26 @@ describe('VerifyRoundUseCase', () => {
     expect(result.serverSeed).toBe(round.serverSeed);
     expect(result.crashPoint).toBe(round.crashPoint);
     expect(result.verified).toBe(true);
+    expect(result.previousRoundId).toBeNull();
+    expect(result.chainValid).toBe(true);
+  });
+
+  it('validates the chain link against the previous round', async () => {
+    const roundRepository = new InMemoryRoundRepository();
+    const betRepository = new InMemoryBetRepository();
+
+    const first = await new CreateRoundUseCase(roundRepository).execute();
+    await new StartRoundUseCase(roundRepository).execute(first.id, new Date());
+    await new CrashRoundUseCase(roundRepository, betRepository).execute(first.id);
+
+    const second = await new CreateRoundUseCase(roundRepository).execute();
+    await new StartRoundUseCase(roundRepository).execute(second.id, new Date());
+    await new CrashRoundUseCase(roundRepository, betRepository).execute(second.id);
+
+    const result = await new VerifyRoundUseCase(roundRepository).execute(second.id);
+
+    expect(result.previousRoundId).toBe(first.id);
+    expect(result.chainValid).toBe(true);
   });
 
   it('throws RoundNotFoundError for a round that does not exist', async () => {

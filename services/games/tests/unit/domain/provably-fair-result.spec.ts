@@ -37,4 +37,25 @@ describe('ProvablyFairResult', () => {
 
     expect(ProvablyFairResult.verify(result.serverSeed, result.hash, result.crashPoint + 1)).toBe(false);
   });
+
+  it('derives the server seed from the previous one when chained', () => {
+    const previous = ProvablyFairResult.generate();
+    const next = ProvablyFairResult.generate(previous.serverSeed);
+
+    expect(ProvablyFairResult.verifyChainLink(previous.serverSeed, next.serverSeed)).toBe(true);
+  });
+
+  it('produces independent, unchained seeds when no previous seed is given', () => {
+    const a = ProvablyFairResult.generate();
+    const b = ProvablyFairResult.generate();
+
+    expect(ProvablyFairResult.verifyChainLink(a.serverSeed, b.serverSeed)).toBe(false);
+  });
+
+  it('fails chain link verification when the seed was not derived from the claimed previous seed', () => {
+    const previous = ProvablyFairResult.generate();
+    const unrelated = ProvablyFairResult.generate();
+
+    expect(ProvablyFairResult.verifyChainLink(previous.serverSeed, unrelated.serverSeed)).toBe(false);
+  });
 });
