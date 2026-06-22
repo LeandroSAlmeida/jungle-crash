@@ -38,7 +38,7 @@ export interface GameState {
 
 const TICK_MS = 50;
 
-function toLiveBet(bet: BetResponseDto): LiveBet {
+export function toLiveBet(bet: BetResponseDto): LiveBet {
   return {
     playerId: bet.playerId,
     username: bet.username ?? "anon",
