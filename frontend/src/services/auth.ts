@@ -4,15 +4,18 @@ const CLIENT_ID = import.meta.env.VITE_KEYCLOAK_CLIENT_ID;
 
 const AUTH_ENDPOINT = `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/auth`;
 const TOKEN_ENDPOINT = `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/token`;
+const LOGOUT_ENDPOINT = `${KEYCLOAK_URL}/realms/${REALM}/protocol/openid-connect/logout`;
 const REDIRECT_URI = `${window.location.origin}/callback`;
 
 const CODE_VERIFIER_KEY = "auth.code_verifier";
 const ACCESS_TOKEN_KEY = "auth.access_token";
 const REFRESH_TOKEN_KEY = "auth.refresh_token";
+const ID_TOKEN_KEY = "auth.id_token";
 
 interface TokenResponse {
   access_token: string;
   refresh_token: string;
+  id_token: string;
 }
 
 interface AccessTokenClaims {
@@ -75,11 +78,21 @@ export async function handleCallback(code: string): Promise<void> {
   const tokens = (await response.json()) as TokenResponse;
   sessionStorage.setItem(ACCESS_TOKEN_KEY, tokens.access_token);
   sessionStorage.setItem(REFRESH_TOKEN_KEY, tokens.refresh_token);
+  sessionStorage.setItem(ID_TOKEN_KEY, tokens.id_token);
 }
 
 export function logout(): void {
+  const idToken = sessionStorage.getItem(ID_TOKEN_KEY);
   sessionStorage.removeItem(ACCESS_TOKEN_KEY);
   sessionStorage.removeItem(REFRESH_TOKEN_KEY);
+  sessionStorage.removeItem(ID_TOKEN_KEY);
+
+  const params = new URLSearchParams({
+    client_id: CLIENT_ID,
+    post_logout_redirect_uri: `${window.location.origin}/`,
+    ...(idToken ? { id_token_hint: idToken } : {}),
+  });
+  window.location.href = `${LOGOUT_ENDPOINT}?${params.toString()}`;
 }
 
 export function getAccessToken(): string | null {
