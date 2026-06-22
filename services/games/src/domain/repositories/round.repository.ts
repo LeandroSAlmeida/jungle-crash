@@ -1,0 +1,11 @@
+import { Round } from '../entities/round';
+
+export interface RoundRepository {
+  save(round: Round): Promise<void>;
+  findById(id: string): Promise<Round | null>;
+  findCurrent(): Promise<Round | null>;
+  findLastCrashed(): Promise<Round | null>;
+  findHistory(limit: number, offset: number): Promise<Round[]>;
+}
+
+export const ROUND_REPOSITORY = Symbol('RoundRepository');
