@@ -23,12 +23,14 @@ interface RoundCrashedPayload {
 interface BetPlacedPayload {
   roundId: string;
   playerId: string;
+  username: string | null;
   amountInCents: number;
 }
 
 interface BetCashedOutPayload {
   roundId: string;
   playerId: string;
+  username: string | null;
   cashoutMultiplier: number;
   payoutInCents: number;
 }

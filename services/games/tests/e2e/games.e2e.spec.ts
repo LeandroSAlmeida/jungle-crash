@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll } from 'bun:test';
+import { describe, it, expect, beforeAll, afterAll, afterEach } from 'bun:test';
 import { Test } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
 import { MikroORM, RequestContext } from '@mikro-orm/core';
@@ -50,6 +50,7 @@ describe('Games (e2e)', () => {
   let startRound: StartRoundUseCase;
   let crashRound: CrashRoundUseCase;
   let roundRepository: RoundRepository;
+  let roundsToClose: string[] = [];
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({ imports: [AppModule] })
@@ -81,6 +82,7 @@ describe('Games (e2e)', () => {
 
   async function openBettingRound(): Promise<string> {
     const round = await inContext(() => createRound.execute());
+    roundsToClose.push(round.id);
     return round.id;
   }
 
@@ -95,6 +97,18 @@ describe('Games (e2e)', () => {
     await inContext(() => crashRound.execute(roundId));
   }
 
+  // Every round created in a test must end up CRASHED before the next test
+  // runs, otherwise findCurrent() (used by the bet/cashout endpoints) could
+  // pick up a leftover round instead of the one the next test just created.
+  // Running this here too - not just at the end of each test - means a round
+  // still gets closed even if an assertion throws partway through.
+  afterEach(async () => {
+    for (const roundId of roundsToClose) {
+      await closeRound(roundId);
+    }
+    roundsToClose = [];
+  });
+
   it('bets, the round runs, cashes out, and the wallet balance is updated', async () => {
     const roundId = await openBettingRound();
     const balanceBefore = await getWalletBalance(token);
@@ -105,9 +119,18 @@ describe('Games (e2e)', () => {
       .send({ amountInCents: 100 })
       .expect(201);
     expect(placeBetResponse.body.status).toBe('PENDING');
+    expect(placeBetResponse.body.username).toBe('player');
 
     await sleep(1000);
     expect(await getWalletBalance(token)).toBe(balanceBefore - 100);
+
+    const currentRoundResponse = await request(app.getHttpServer())
+      .get('/rounds/current')
+      .expect(200);
+    const publicBet = (currentRoundResponse.body.bets as { roundId: string; username?: string }[]).find(
+      (bet) => bet.roundId === roundId,
+    );
+    expect(publicBet?.username).toBe('player');
 
     await inContext(() => startRound.execute(roundId, new Date()));
 
@@ -120,8 +143,6 @@ describe('Games (e2e)', () => {
     const payoutInCents = cashOutResponse.body.payoutInCents as number;
     await sleep(1000);
     expect(await getWalletBalance(token)).toBe(balanceBefore - 100 + payoutInCents);
-
-    await closeRound(roundId);
   });
 
   it('loses the bet when the round crashes before cashing out', async () => {
@@ -146,7 +167,7 @@ describe('Games (e2e)', () => {
   });
 
   it('rejects a second bet from the same player in the same round', async () => {
-    const roundId = await openBettingRound();
+    await openBettingRound();
 
     await request(app.getHttpServer())
       .post('/bet')
@@ -159,8 +180,6 @@ describe('Games (e2e)', () => {
       .set('Authorization', `Bearer ${token}`)
       .send({ amountInCents: 100 })
       .expect(409);
-
-    await closeRound(roundId);
   });
 
   it('rejects betting once the round has left the betting phase', async () => {
@@ -172,20 +191,16 @@ describe('Games (e2e)', () => {
       .set('Authorization', `Bearer ${token}`)
       .send({ amountInCents: 100 })
       .expect(409);
-
-    await closeRound(roundId);
   });
 
   it('rejects an amount below the minimum bet', async () => {
-    const roundId = await openBettingRound();
+    await openBettingRound();
 
     await request(app.getHttpServer())
       .post('/bet')
       .set('Authorization', `Bearer ${token}`)
       .send({ amountInCents: 1 })
       .expect(400);
-
-    await closeRound(roundId);
   });
 
   it('rejects a bet that exceeds the wallet balance', async () => {
@@ -219,7 +234,5 @@ describe('Games (e2e)', () => {
       .expect(200);
     const rejectedBet = (myBets.body as Bet[]).find((bet) => bet.roundId === roundId);
     expect(rejectedBet?.status).toBe(BetStatus.REJECTED);
-
-    await closeRound(roundId);
   });
 });

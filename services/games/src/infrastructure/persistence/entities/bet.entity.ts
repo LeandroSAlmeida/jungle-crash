@@ -13,6 +13,9 @@ export class BetEntity {
   @Property()
   playerId!: string;
 
+  @Property({ nullable: true })
+  username?: string | null;
+
   @Property({ columnType: 'bigint', type: 'number' })
   amountInCents!: number;
 

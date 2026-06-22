@@ -19,27 +19,29 @@ export class Bet {
     private readonly _id: string,
     private readonly _roundId: string,
     private readonly _playerId: string,
+    private readonly _username: string | null,
     private readonly _amount: Money,
     private _status: BetStatus,
     private _cashoutMultiplier: number | null,
   ) {}
 
-  static place(roundId: string, playerId: string, amount: Money): Bet {
+  static place(roundId: string, playerId: string, amount: Money, username?: string): Bet {
     if (amount.cents < Bet.MIN_AMOUNT_CENTS || amount.cents > Bet.MAX_AMOUNT_CENTS) {
       throw new InvalidBetAmountError(Bet.MIN_AMOUNT_CENTS, Bet.MAX_AMOUNT_CENTS);
     }
-    return new Bet(randomUUID(), roundId, playerId, amount, BetStatus.PENDING, null);
+    return new Bet(randomUUID(), roundId, playerId, username ?? null, amount, BetStatus.PENDING, null);
   }
 
   static restore(
     id: string,
     roundId: string,
     playerId: string,
+    username: string | null,
     amount: Money,
     status: BetStatus,
     cashoutMultiplier: number | null,
   ): Bet {
-    return new Bet(id, roundId, playerId, amount, status, cashoutMultiplier);
+    return new Bet(id, roundId, playerId, username, amount, status, cashoutMultiplier);
   }
 
   cashOut(multiplier: number): void {
@@ -74,6 +76,10 @@ export class Bet {
 
   get playerId(): string {
     return this._playerId;
+  }
+
+  get username(): string | null {
+    return this._username;
   }
 
   get amount(): Money {
