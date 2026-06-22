@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { LogIn } from "lucide-react";
+import { Button } from "../components/ui/button";
 
 const BG_MULTIPLIERS = ["1.24x", "8.03x", "2.51x", "21.0x", "1.01x", "5.78x", "13.4x", "3.22x", "47.9x", "1.88x"];
 
@@ -114,18 +115,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
             </div>
 
             <div className="space-y-3">
-              <button
-                type="button"
-                onClick={handleLogin}
-                disabled={redirecting}
-                className="w-full py-3 rounded font-black text-sm tracking-widest flex items-center justify-center gap-2 transition-all duration-200 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
-                style={{
-                  background: redirecting ? "rgba(109,197,50,0.3)" : "linear-gradient(135deg, #6DC532 0%, #00D46A 100%)",
-                  color: "#031A0C",
-                  fontFamily: "'Orbitron', monospace",
-                  boxShadow: redirecting ? "none" : "0 0 12px rgba(109,197,50,0.3)",
-                }}
-              >
+              <Button onClick={handleLogin} disabled={redirecting}>
                 {redirecting ? (
                   <>
                     <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none">
@@ -140,7 +130,7 @@ export function LoginPage({ onLogin }: LoginPageProps) {
                     ENTRAR
                   </>
                 )}
-              </button>
+              </Button>
             </div>
 
             <div className="pt-1 border-t border-border space-y-1.5">

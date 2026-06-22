@@ -1,9 +1,22 @@
-import { useAuth } from "./hooks/useAuth";
+import { useEffect } from "react";
+import { useAuthStore } from "./stores/authStore";
+import { useWalletStore } from "./stores/walletStore";
 import { LoginPage } from "./pages/LoginPage";
 import { CallbackPage } from "./pages/CallbackPage";
 
 export function App() {
-  const { authenticated, username, login, completeLogin, logout } = useAuth();
+  const authenticated = useAuthStore((state) => state.authenticated);
+  const username = useAuthStore((state) => state.username);
+  const login = useAuthStore((state) => state.login);
+  const completeLogin = useAuthStore((state) => state.completeLogin);
+  const logout = useAuthStore((state) => state.logout);
+  const refreshWallet = useWalletStore((state) => state.refresh);
+
+  useEffect(() => {
+    if (authenticated) {
+      refreshWallet();
+    }
+  }, [authenticated, refreshWallet]);
 
   if (window.location.pathname === "/callback") {
     return <CallbackPage onCallback={completeLogin} />;
