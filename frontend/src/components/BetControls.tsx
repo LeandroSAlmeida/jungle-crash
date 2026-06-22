@@ -25,7 +25,8 @@ export function BetControls({ phase, multiplier, countdownMs, myBet, balanceInCe
   const canCashout = phase === "RUNNING" && myBet?.status === "PENDING" && !pending;
 
   const amountInCents = Math.round(parseFloat(amount) * 100);
-  const potentialWinCents = myBet ? myBet.amountInCents * multiplier : null;
+  const liveMultiplier = Number.isFinite(multiplier) ? multiplier : 1;
+  const potentialWinCents = myBet ? myBet.amountInCents * liveMultiplier : null;
 
   const handleBet = async () => {
     if (!canBet || isNaN(amountInCents) || amountInCents < 100 || amountInCents > 100000) {
