@@ -11,6 +11,7 @@ function toDomain(entity: RoundEntity): Round {
     entity.phase,
     ProvablyFairResult.restore(entity.serverSeed, entity.hash, entity.crashPoint),
     entity.startedAt ?? null,
+    entity.previousRoundId ?? null,
   );
 }
 
@@ -33,6 +34,7 @@ export class MikroOrmRoundRepository implements RoundRepository {
         serverSeed: snapshot.serverSeed,
         crashPoint: snapshot.crashPoint,
         startedAt: snapshot.startedAt ?? undefined,
+        previousRoundId: snapshot.previousRoundId ?? undefined,
       });
     }
 
@@ -46,6 +48,15 @@ export class MikroOrmRoundRepository implements RoundRepository {
 
   async findCurrent(): Promise<Round | null> {
     const entity = await this.em.findOne(RoundEntity, { phase: { $ne: RoundPhase.CRASHED } });
+    return entity ? toDomain(entity) : null;
+  }
+
+  async findLastCrashed(): Promise<Round | null> {
+    const entity = await this.em.findOne(
+      RoundEntity,
+      { phase: RoundPhase.CRASHED },
+      { orderBy: { startedAt: 'desc' } },
+    );
     return entity ? toDomain(entity) : null;
   }
 

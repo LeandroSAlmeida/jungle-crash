@@ -20,4 +20,7 @@ export class RoundEntity {
 
   @Property({ nullable: true })
   startedAt?: Date;
+
+  @Property({ nullable: true })
+  previousRoundId?: string;
 }

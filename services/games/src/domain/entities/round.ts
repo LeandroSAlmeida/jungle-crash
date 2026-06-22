@@ -19,10 +19,16 @@ export class Round {
     private readonly _id: string,
     private _phase: RoundPhase,
     private readonly _provablyFair: ProvablyFairResult,
+    private readonly _previousRoundId: string | null,
   ) {}
 
-  static create(): Round {
-    return new Round(randomUUID(), RoundPhase.BETTING, ProvablyFairResult.generate());
+  static create(previousRound?: { id: string; serverSeed: string }): Round {
+    return new Round(
+      randomUUID(),
+      RoundPhase.BETTING,
+      ProvablyFairResult.generate(previousRound?.serverSeed),
+      previousRound?.id ?? null,
+    );
   }
 
   static restore(
@@ -30,8 +36,9 @@ export class Round {
     phase: RoundPhase,
     provablyFair: ProvablyFairResult,
     startedAt: Date | null,
+    previousRoundId: string | null,
   ): Round {
-    const round = new Round(id, phase, provablyFair);
+    const round = new Round(id, phase, provablyFair, previousRoundId);
     round._startedAt = startedAt;
     return round;
   }
@@ -43,6 +50,7 @@ export class Round {
     serverSeed: string;
     crashPoint: number;
     startedAt: Date | null;
+    previousRoundId: string | null;
   } {
     return {
       id: this._id,
@@ -51,6 +59,7 @@ export class Round {
       serverSeed: this._provablyFair.serverSeed,
       crashPoint: this._provablyFair.crashPoint,
       startedAt: this._startedAt,
+      previousRoundId: this._previousRoundId,
     };
   }
 
@@ -95,6 +104,10 @@ export class Round {
 
   get hash(): string {
     return this._provablyFair.hash;
+  }
+
+  get previousRoundId(): string | null {
+    return this._previousRoundId;
   }
 
   get crashPoint(): number {

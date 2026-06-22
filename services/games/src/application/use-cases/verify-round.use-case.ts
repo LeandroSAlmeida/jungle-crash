@@ -8,6 +8,8 @@ export interface VerifyRoundResult {
   serverSeed: string;
   crashPoint: number;
   verified: boolean;
+  previousRoundId: string | null;
+  chainValid: boolean;
 }
 
 @Injectable()
@@ -25,6 +27,13 @@ export class VerifyRoundUseCase {
     const crashPoint = round.crashPoint;
     const verified = ProvablyFairResult.verify(serverSeed, hash, crashPoint);
 
-    return { hash, serverSeed, crashPoint, verified };
+    const previousRoundId = round.previousRoundId;
+    let chainValid = true;
+    if (previousRoundId) {
+      const previousRound = await this.roundRepository.findById(previousRoundId);
+      chainValid = previousRound !== null && ProvablyFairResult.verifyChainLink(previousRound.serverSeed, serverSeed);
+    }
+
+    return { hash, serverSeed, crashPoint, verified, previousRoundId, chainValid };
   }
 }

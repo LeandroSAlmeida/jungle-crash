@@ -235,4 +235,20 @@ describe('Games (e2e)', () => {
     const rejectedBet = (myBets.body as Bet[]).find((bet) => bet.roundId === roundId);
     expect(rejectedBet?.status).toBe(BetStatus.REJECTED);
   });
+
+  it('chains the seed of a round to the one that crashed right before it', async () => {
+    const firstRoundId = await openBettingRound();
+    await closeRound(firstRoundId);
+
+    const secondRoundId = await openBettingRound();
+    await closeRound(secondRoundId);
+
+    const verifyResponse = await request(app.getHttpServer())
+      .get(`/rounds/${secondRoundId}/verify`)
+      .expect(200);
+
+    expect(verifyResponse.body.previousRoundId).toBe(firstRoundId);
+    expect(verifyResponse.body.chainValid).toBe(true);
+    expect(verifyResponse.body.verified).toBe(true);
+  });
 });
