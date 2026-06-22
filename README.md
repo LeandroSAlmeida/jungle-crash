@@ -94,8 +94,6 @@ O cashout segue o caminho inverso: `Game` marca a aposta como `CASHED_OUT` e pub
 
 **Kong só roteia os dois microsserviços, não o Keycloak.** Os endpoints de autenticação (`/realms/.../auth`, `/token`, etc.) são do próprio Keycloak, acessados diretamente — não fazem parte da API do produto, então não tem motivo para passar pelo gateway.
 
-**Frontend construído sobre um protótipo do Figma.** O design visual (cores, layout, animações, tipografia) foi portado do protótipo, mas toda a lógica era mockada (login fake com `setTimeout`, estado do jogo gerado localmente em `Math.random()`). O trabalho real foi reescrever essa camada de dados inteira: autenticação OIDC real com PKCE, WebSocket real para sincronizar todos os clientes, e REST real para apostar/sacar — mantendo a UI como estava.
-
 **Zustand para estado compartilhado no frontend, hooks locais para o resto.** Sessão (`authStore`) e saldo (`walletStore`) são lidos por múltiplos componentes ao mesmo tempo (header, controles de aposta) — Zustand evita buscar/duplicar esse estado em cada um. O estado da rodada em si (`useGameState`) fica num hook normal, porque só a página do jogo o usa.
 
 ---

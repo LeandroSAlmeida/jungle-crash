@@ -40,10 +40,15 @@ export function GamePage() {
     <div className="h-screen bg-background text-foreground flex flex-col overflow-hidden" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
       <PlayerHeader hash={hash} history={history} balanceInCents={balanceInCents} username={username} onLogout={logout} />
 
-      <div className="flex-1 flex overflow-hidden min-h-0">
-        <CrashChart phase={phase} multiplier={multiplier} crashPoint={crashPoint} countdownMs={countdownMs} />
+      <div className="flex-1 flex flex-col md:flex-row overflow-hidden min-h-0">
+        <div className="h-[42vh] shrink-0 md:h-auto md:flex-1 md:shrink">
+          <CrashChart phase={phase} multiplier={multiplier} crashPoint={crashPoint} countdownMs={countdownMs} />
+        </div>
 
-        <div className="w-72 xl:w-80 flex flex-col border-l border-border overflow-hidden shrink-0" style={{ background: "#070E0A" }}>
+        <div
+          className="flex-1 md:flex-none md:w-72 xl:w-80 flex flex-col border-t md:border-t-0 md:border-l border-border overflow-hidden min-h-0"
+          style={{ background: "#070E0A" }}
+        >
           <BetControls
             phase={phase}
             multiplier={multiplier}
