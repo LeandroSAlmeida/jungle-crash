@@ -1,4 +1,5 @@
 import { Controller, Get, Post, UseGuards, ConflictException, NotFoundException } from "@nestjs/common";
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard, CurrentPlayer } from "@crash/auth";
 import { HealthCheckResponseDto } from "../dtos/health-check-response.dto";
 import { WalletResponseDto } from "../dtos/wallet-response.dto";
@@ -16,6 +17,7 @@ function toResponseDto(wallet: Wallet): WalletResponseDto {
   };
 }
 
+@ApiTags("wallets")
 @Controller()
 export class WalletsController {
   constructor(
@@ -28,6 +30,10 @@ export class WalletsController {
     return { status: "ok", service: "wallets" };
   }
 
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Cria a carteira do jogador autenticado" })
+  @ApiResponse({ status: 201, type: WalletResponseDto })
+  @ApiResponse({ status: 409, description: "Carteira já existe" })
   @UseGuards(JwtAuthGuard)
   @Post()
   async create(@CurrentPlayer() playerId: string): Promise<WalletResponseDto> {
@@ -42,6 +48,10 @@ export class WalletsController {
     }
   }
 
+  @ApiBearerAuth()
+  @ApiOperation({ summary: "Retorna a carteira e o saldo do jogador autenticado" })
+  @ApiResponse({ status: 200, type: WalletResponseDto })
+  @ApiResponse({ status: 404, description: "Carteira não encontrada" })
   @UseGuards(JwtAuthGuard)
   @Get("me")
   async getMine(@CurrentPlayer() playerId: string): Promise<WalletResponseDto> {
