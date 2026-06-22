@@ -38,6 +38,8 @@ export function CrashChart({ phase, multiplier, crashPoint, countdownMs }: Crash
   const [points, setPoints] = useState<Point[]>([]);
   const startRef = useRef<number | null>(null);
 
+  const liveMultiplier = Number.isFinite(multiplier) ? multiplier : 1;
+
   useEffect(() => {
     if (phase === "BETTING") {
       setPoints([]);
@@ -49,14 +51,14 @@ export function CrashChart({ phase, multiplier, crashPoint, countdownMs }: Crash
         startRef.current = performance.now();
       }
       const elapsed = performance.now() - startRef.current;
-      setPoints((prev) => [...prev.slice(-400), { t: elapsed, m: multiplier }]);
+      setPoints((prev) => [...prev.slice(-400), { t: elapsed, m: liveMultiplier }]);
     }
-  }, [phase, multiplier]);
+  }, [phase, liveMultiplier]);
 
   const crashed = phase === "CRASHED";
   const lastPt = points[points.length - 1];
   const maxT = Math.max((lastPt?.t ?? 0) * 1.06, 5000);
-  const maxM = Math.max(multiplier * 1.28, 2.1);
+  const maxM = Math.max(liveMultiplier * 1.28, 2.1);
 
   const svgPts = points.map(({ t, m }) => ({
     x: PAD_L + (t / maxT) * (SVG_W - PAD_L - 8),
@@ -69,7 +71,7 @@ export function CrashChart({ phase, multiplier, crashPoint, countdownMs }: Crash
 
   const lineColor = crashed ? "#FF3B5C" : "#6DC532";
   const glowHex = crashed ? "255,59,92" : "109,197,50";
-  const multDisplay = crashed ? (crashPoint?.toFixed(2) ?? "?") : multiplier.toFixed(2);
+  const multDisplay = crashed ? (crashPoint?.toFixed(2) ?? "?") : liveMultiplier.toFixed(2);
   const yGridVals = [1.5, 2, 3, 5, 10, 25].filter((v) => v < maxM * 0.92);
   const countdownSeconds = Math.ceil(countdownMs / 1000);
 

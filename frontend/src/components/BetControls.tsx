@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Shield, Clock } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "./ui/button";
 import type { RoundPhase } from "../services/api";
 import type { LiveBet } from "../hooks/useGameState";
@@ -24,18 +25,23 @@ export function BetControls({ phase, multiplier, countdownMs, myBet, balanceInCe
   const canCashout = phase === "RUNNING" && myBet?.status === "PENDING" && !pending;
 
   const amountInCents = Math.round(parseFloat(amount) * 100);
-  const potentialWinCents = myBet ? myBet.amountInCents * multiplier : null;
+  const liveMultiplier = Number.isFinite(multiplier) ? multiplier : 1;
+  const potentialWinCents = myBet ? myBet.amountInCents * liveMultiplier : null;
 
   const handleBet = async () => {
     if (!canBet || isNaN(amountInCents) || amountInCents < 100 || amountInCents > 100000) {
+      toast.error("Valor de aposta inválido. Use entre R$ 1,00 e R$ 1.000,00.");
       return;
     }
     if (balanceInCents !== null && amountInCents > balanceInCents) {
+      toast.error("Saldo insuficiente para essa aposta.");
       return;
     }
     setPending(true);
     try {
       await onBet(amountInCents);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Não foi possível registrar a aposta.");
     } finally {
       setPending(false);
     }
@@ -48,6 +54,8 @@ export function BetControls({ phase, multiplier, countdownMs, myBet, balanceInCe
     setPending(true);
     try {
       await onCashout();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Não foi possível sacar agora.");
     } finally {
       setPending(false);
     }

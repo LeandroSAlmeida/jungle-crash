@@ -21,6 +21,10 @@ export class InMemoryRoundRepository implements RoundRepository {
     return null;
   }
 
+  async findAllActive(): Promise<Round[]> {
+    return [...this.rounds.values()].filter((round) => round.phase !== RoundPhase.CRASHED);
+  }
+
   async findLastCrashed(): Promise<Round | null> {
     const crashed = [...this.rounds.values()].filter((round) => round.phase === RoundPhase.CRASHED);
     return crashed.length > 0 ? crashed[crashed.length - 1] : null;

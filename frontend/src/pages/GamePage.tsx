@@ -1,4 +1,4 @@
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Loader2 } from "lucide-react";
 import { useGameState } from "../hooks/useGameState";
 import { useAuthStore } from "../stores/authStore";
 import { useWalletStore } from "../stores/walletStore";
@@ -10,7 +10,7 @@ import { PlayerHeader } from "../components/PlayerHeader";
 import { placeBet, cashOut } from "../services/api";
 
 export function GamePage() {
-  const { phase, hash, multiplier, crashPoint, countdownMs, liveBets, history } = useGameState();
+  const { loading, phase, hash, multiplier, crashPoint, countdownMs, liveBets, history } = useGameState();
   const username = useAuthStore((state) => state.username);
   const logout = useAuthStore((state) => state.logout);
   const balanceInCents = useWalletStore((state) => state.balanceInCents);
@@ -27,6 +27,14 @@ export function GamePage() {
     await cashOut();
     await refreshWallet();
   };
+
+  if (loading) {
+    return (
+      <div className="h-screen bg-background text-foreground flex items-center justify-center">
+        <Loader2 className="animate-spin text-primary" size={32} />
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen bg-background text-foreground flex flex-col overflow-hidden" style={{ fontFamily: "'JetBrains Mono', monospace" }}>
