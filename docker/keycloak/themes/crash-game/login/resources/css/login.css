@@ -2,14 +2,22 @@
 
 :root {
   --keycloak-card-top-color: #6dc532;
-  --keycloak-logo-url: url("../img/logo.svg");
-  --keycloak-logo-height: 72px;
-  --keycloak-logo-width: 72px;
 }
 
 .login-pf body {
   background: radial-gradient(ellipse 100% 80% at 50% 110%, #091808 0%, #060a0d 55%, #04070b 100%) !important;
   font-family: "JetBrains Mono", monospace;
+}
+
+.pf-v5-c-login {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.pf-v5-c-login__container {
+  position: relative;
+  margin-top: 2.5rem;
 }
 
 .pf-v5-c-login__main {
@@ -20,6 +28,21 @@
 
 .pf-v5-c-login__main-header {
   border-top: 4px solid #6dc532;
+}
+
+#kc-header-wrapper.pf-v5-c-brand {
+  position: absolute;
+  top: -4.5rem;
+  left: 50%;
+  background: url("../img/logo.svg") no-repeat center center;
+  background-size: contain;
+  height: 120px;
+  width: 120px;
+  margin: 0;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 0 10px rgba(109, 197, 50, 0.8));
+  font-size: 0 !important;
+  color: transparent !important;
 }
 
 .pf-v5-c-title,
