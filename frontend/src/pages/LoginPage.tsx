@@ -1,0 +1,172 @@
+import { useState } from "react";
+import { LogIn } from "lucide-react";
+
+const BG_MULTIPLIERS = ["1.24x", "8.03x", "2.51x", "21.0x", "1.01x", "5.78x", "13.4x", "3.22x", "47.9x", "1.88x"];
+
+interface LoginPageProps {
+  onLogin: () => Promise<void>;
+}
+
+export function LoginPage({ onLogin }: LoginPageProps) {
+  const [redirecting, setRedirecting] = useState(false);
+
+  const handleLogin = async () => {
+    setRedirecting(true);
+    await onLogin();
+  };
+
+  return (
+    <div
+      className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden"
+      style={{
+        fontFamily: "'JetBrains Mono', monospace",
+        background: "radial-gradient(ellipse 100% 80% at 50% 110%, #091808 0%, #060A0D 55%, #04070B 100%)",
+      }}
+    >
+      <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
+        {BG_MULTIPLIERS.map((m, i) => (
+          <span
+            key={m}
+            className="absolute font-black text-2xl md:text-4xl"
+            style={{
+              fontFamily: "'Orbitron', monospace",
+              left: `${(i * 37 + 5) % 90}%`,
+              top: `${(i * 23 + 8) % 85}%`,
+              color:
+                parseFloat(m) >= 10
+                  ? "rgba(0,229,255,0.06)"
+                  : parseFloat(m) >= 3
+                    ? "rgba(109,197,50,0.05)"
+                    : "rgba(255,59,92,0.045)",
+              transform: `rotate(${(i % 2 === 0 ? 1 : -1) * ((i * 7) % 18)}deg)`,
+            }}
+          >
+            {m}
+          </span>
+        ))}
+      </div>
+
+      <div
+        className="absolute rounded-full pointer-events-none"
+        style={{
+          width: 480,
+          height: 480,
+          background: "radial-gradient(circle, rgba(109,197,50,0.06) 0%, transparent 70%)",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+        }}
+      />
+
+      <div className="relative z-10 w-full max-w-sm mx-4" style={{ padding: "1.5px", borderRadius: "0.6rem" }}>
+        <div className="absolute inset-0 overflow-hidden" style={{ borderRadius: "0.6rem" }}>
+          <div
+            style={{
+              position: "absolute",
+              inset: "-80%",
+              background:
+                "conic-gradient(from 0deg, transparent 0%, transparent 35%, #6DC532 50%, #A8E063 55%, transparent 65%, transparent 100%)",
+              animation: "borderSpin 3s linear infinite",
+            }}
+          />
+        </div>
+
+        <div
+          className="relative overflow-hidden"
+          style={{
+            borderRadius: "calc(0.6rem - 1.5px)",
+            background: "rgba(8,13,17,0.97)",
+            boxShadow: "0 24px 64px rgba(0,0,0,0.7), 0 0 40px rgba(109,197,50,0.04) inset",
+          }}
+        >
+          <div className="p-8 space-y-7">
+            <div className="text-center space-y-3">
+              <div
+                className="flex justify-center"
+                style={{ filter: "drop-shadow(0 0 10px rgba(109,197,50,0.8)) drop-shadow(0 0 24px rgba(109,197,50,0.4))" }}
+              >
+                <svg
+                  version="1.0"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="200"
+                  height="194"
+                  viewBox="0 0 1180 1150"
+                  preserveAspectRatio="xMidYMid meet"
+                >
+                  <g transform="translate(0,1200) scale(1,-1)" fill="#6DC532" stroke="none">
+                    <path d="M241 957 c-8 -10 -6 -19 7 -33 9 -11 18 -26 20 -34 2 -8 9 -22 15 -30 7 -8 18 -26 25 -39 11 -18 11 -21 1 -15 -7 4 -3 -6 8 -22 l22 -30 -41 -3 c-55 -3 -118 -66 -118 -117 0 -10 -10 -28 -21 -40 -15 -16 -22 -39 -24 -76 -8 -147 -9 -149 -27 -159 -19 -10 -16 -29 5 -29 7 0 6 4 -3 10 -8 5 -10 10 -4 10 15 0 36 -25 27 -33 -3 -4 1 -7 11 -7 9 0 14 4 11 10 -3 6 6 11 22 12 49 2 52 3 64 15 6 6 19 9 28 6 9 -4 13 -3 9 2 -4 4 0 20 9 35 11 20 14 38 9 65 -9 47 -22 32 -31 -35 -6 -44 -8 -46 -48 -56 -23 -6 -50 -14 -59 -18 -15 -7 -16 -1 -11 51 6 61 24 93 54 93 10 0 20 3 22 8 8 12 -47 11 -62 -1 -12 -10 -13 -6 -7 28 13 69 20 75 86 75 46 0 60 3 60 15 0 27 -36 37 -75 21 -40 -17 -42 -13 -15 31 29 48 63 67 111 60 50 -7 84 -34 68 -54 -13 -15 -73 -18 -64 -3 8 14 -56 13 -75 -1 -11 -8 -8 -9 13 -4 26 5 88 -12 87 -25 -1 -3 -16 -22 -35 -44 -26 -29 -40 -37 -56 -33 -11 3 -34 -2 -50 -12 -31 -19 -29 -37 2 -20 11 5 19 7 19 3 0 -3 6 -1 14 5 8 7 16 8 19 4 6 -10 -49 -95 -60 -92 -10 2 -46 -71 -39 -79 12 -11 85 48 83 67 0 11 -5 17 -9 15 -36 -22 63 106 127 165 45 42 49 43 61 26 23 -31 18 -74 -11 -87 -15 -7 -25 -20 -25 -32 -1 -18 -3 -17 -18 9 l-17 30 -3 -32 c-2 -18 2 -49 7 -70 10 -34 9 -40 -12 -55 -12 -10 -30 -18 -39 -18 -22 0 -23 -16 -2 -24 22 -9 26 -8 18 6 -5 7 -3 8 6 3 10 -6 9 -11 -5 -22 -11 -7 -20 -19 -21 -26 -5 -30 -10 -42 -19 -49 -6 -5 -4 -8 5 -9 52 -5 78 -4 74 3 -3 4 3 8 12 8 10 0 15 3 12 6 -7 6 28 44 40 44 4 0 18 -9 32 -20 30 -23 34 -24 52 -8 7 7 27 22 43 34 26 18 32 19 44 7 10 -11 16 -11 26 -3 8 7 19 9 25 5 5 -3 13 1 16 9 6 17 39 22 48 8 5 -9 59 -8 75 2 5 4 45 9 88 12 95 6 113 11 136 37 17 20 19 69 3 95 -10 16 3 54 22 68 14 10 14 18 4 53 -9 29 -10 46 -2 61 13 24 -6 60 -32 60 -10 0 -18 7 -18 17 0 9 3 14 6 10 9 -8 32 16 28 28 -3 6 8 12 23 13 43 3 53 22 12 22 -41 0 -79 -22 -59 -35 23 -14 -46 -36 -77 -24 -32 12 -120 6 -136 -10 -8 -8 -8 -11 1 -11 7 0 12 3 12 8 0 15 77 6 106 -13 l29 -19 -107 -12 c-59 -7 -112 -15 -118 -19 -5 -3 -10 -3 -9 2 1 16 126 117 169 136 48 22 141 28 195 14 29 -8 29 -8 12 10 -14 14 -35 18 -95 19 -74 1 -77 2 -77 25 0 41 -11 48 -56 38 -22 -5 -45 -6 -51 -3 -6 4 -8 2 -4 -4 9 -15 -7 -23 -24 -12 -9 6 -21 1 -36 -13 -44 -43 -57 -52 -62 -39 -6 20 -29 14 -50 -13 -11 -13 -22 -22 -25 -19 -3 3 -3 -3 0 -15 3 -12 1 -21 -6 -21 -6 0 -12 6 -12 13 -1 6 -2 17 -3 22 -2 17 -45 71 -46 58 0 -7 9 -36 20 -64 15 -36 20 -70 18 -110 -3 -52 -8 -68 -14 -36 -1 7 -9 32 -18 56 -9 24 -16 68 -16 98 0 34 -4 52 -10 48 -6 -4 -8 -11 -5 -16 4 -5 2 -9 -4 -9 -6 0 -8 -8 -5 -17 3 -10 -8 -2 -25 17 -17 19 -31 38 -31 43 0 4 -5 7 -11 7 -5 0 -7 -5 -3 -12 4 -6 3 -8 -4 -4 -6 3 -9 15 -7 25 3 16 -2 18 -31 14 -22 -3 -34 -1 -34 7 0 7 -7 10 -16 6 -8 -3 -12 -2 -9 4 9 15 -71 12 -84 -3z m92 -24 c27 -10 67 -33 89 -52 43 -37 88 -119 88 -161 -1 -24 -1 -24 -15 -6 -8 11 -16 34 -16 50 -1 18 -3 23 -6 13 -4 -16 -7 -15 -24 7 -10 13 -19 35 -20 48 0 20 -1 20 -8 5 -6 -17 -8 -18 -21 -3 -7 9 -31 31 -53 49 -40 31 -40 31 -23 4 10 -15 21 -25 25 -22 7 4 81 -78 81 -90 0 -3 -9 -1 -19 5 -14 7 -22 7 -27 -2 -4 -6 -3 -8 3 -5 11 7 73 -49 73 -65 0 -5 4 -7 9 -3 5 3 12 1 15 -4 4 -5 -5 -8 -20 -6 -16 1 -24 -2 -21 -10 8 -18 -19 -14 -31 6 -10 15 -8 17 8 14 38 -7 30 13 -14 34 -24 12 -51 30 -61 41 -18 19 -17 20 8 20 37 0 34 17 -4 25 -20 5 -34 16 -40 33 -6 15 -22 42 -35 59 -22 29 -23 33 -7 33 10 0 40 -8 66 -17z m557 -1 c0 -4 -7 -18 -16 -30 -8 -12 -13 -26 -10 -30 3 -5 -10 -16 -30 -25 -19 -9 -56 -36 -82 -59 -31 -29 -37 -32 -18 -10 17 18 25 32 19 32 -6 0 -36 -27 -66 -60 -55 -61 -80 -73 -91 -44 -13 35 -6 47 13 23 l19 -24 -11 42 c-10 38 -8 48 13 90 20 40 24 44 31 27 12 -31 11 -86 -3 -78 -7 4 -8 3 -4 -5 11 -17 23 -5 36 37 7 20 27 51 46 69 l34 32 0 -25 c0 -14 -5 -35 -11 -47 -9 -19 -8 -19 11 3 11 14 24 34 29 44 4 10 23 24 42 31 43 16 49 17 49 7z m130 -222 c0 -15 -7 -20 -25 -20 -16 0 -25 -6 -25 -16 0 -11 6 -14 20 -9 12 4 20 2 20 -5 0 -7 -9 -14 -20 -17 -31 -8 -26 -36 5 -31 19 4 25 1 25 -12 0 -14 -10 -19 -40 -22 l-41 -4 3 71 3 70 35 6 c19 4 36 7 38 8 1 0 2 -8 2 -19z m-480 -20 c0 -5 -10 -10 -22 -10 -19 0 -20 2 -8 10 19 13 30 13 30 0z m270 -10 c0 -15 -7 -20 -25 -20 -22 0 -25 -4 -25 -40 0 -30 4 -40 16 -40 10 0 14 7 12 22 -2 15 3 24 15 26 14 3 17 -4 17 -32 0 -29 -4 -37 -24 -42 -52 -13 -61 -4 -64 63 -3 61 -2 63 25 69 15 3 33 7 38 9 6 2 11 4 13 4 1 1 2 -8 2 -19z m60 -34 c0 -51 1 -53 25 -48 18 3 25 0 25 -12 0 -9 -4 -16 -9 -16 -5 0 -23 -3 -40 -6 l-31 -6 0 71 c0 56 3 71 15 71 11 0 15 -13 15 -54z m-154 -36 c0 -59 -2 -70 -16 -70 -9 0 -24 15 -33 33 l-16 32 0 -37 c-1 -27 -5 -38 -16 -38 -12 0 -15 14 -15 70 0 62 2 70 19 70 12 0 23 -11 30 -30 14 -41 24 -38 19 5 -3 27 0 35 12 35 12 0 15 -14 16 -70z m-218 -13 c4 -81 -5 -96 -55 -100 -22 -2 -28 2 -28 18 0 15 6 19 23 18 21 -3 22 1 22 57 0 41 -4 60 -12 61 -14 0 20 17 37 18 6 1 12 -29 13 -72z m67 -47 c11 0 15 14 15 55 0 38 4 55 13 55 16 0 21 -93 7 -121 -8 -13 -21 -19 -45 -19 l-35 0 0 64 c0 43 4 66 13 69 8 2 13 -12 15 -50 2 -38 7 -53 17 -53z m-315 6 c0 -3 -4 -8 -10 -11 -5 -3 -10 -1 -10 4 0 6 5 11 10 11 6 0 10 -2 10 -4z m738 -13 c-2 -10 -13 -19 -26 -21 -18 -3 -22 -10 -22 -38 0 -23 5 -34 15 -34 9 0 14 8 12 22 -1 14 4 23 16 26 14 3 17 -4 17 -36 0 -37 -2 -40 -32 -45 -54 -7 -59 -1 -56 67 3 64 4 65 71 75 5 0 7 -7 5 -16z m-134 -35 l14 -33 1 33 c1 21 6 32 16 32 21 0 22 -125 1 -133 -9 -4 -19 5 -26 24 -18 43 -30 45 -23 4 4 -28 2 -35 -11 -35 -13 0 -16 12 -16 64 0 58 3 68 27 75 2 1 9 -14 17 -31z m-64 -48 c0 -56 -3 -70 -15 -70 -12 0 -15 14 -15 70 0 56 3 70 15 70 12 0 15 -14 15 -70z m-40 -5 c0 -59 -5 -70 -27 -62 -4 1 -6 15 -4 31 2 18 -1 26 -8 22 -6 -4 -11 -14 -11 -22 0 -8 -4 -14 -10 -14 -5 0 -10 6 -10 14 0 8 -5 18 -11 22 -8 5 -10 -4 -7 -29 3 -33 1 -36 -27 -41 -17 -4 -31 -2 -33 4 -6 16 -30 12 -40 -6 -5 -9 -14 -15 -19 -13 -16 7 20 133 39 137 13 3 20 -9 29 -57 7 -33 16 -58 21 -55 4 3 8 32 8 65 0 52 3 60 17 57 9 -2 20 -14 24 -28 7 -25 7 -25 19 8 8 20 19 32 31 32 17 0 19 -8 19 -65z m-230 20 c0 -8 -11 -17 -25 -21 -21 -5 -25 -12 -25 -40 0 -24 5 -34 15 -34 8 0 15 7 15 16 0 8 -4 12 -10 9 -15 -9 -12 2 6 19 8 9 20 16 25 16 16 0 8 -82 -9 -102 -19 -22 -33 -23 -25 -2 4 11 1 15 -13 13 -33 -6 -40 7 -34 67 4 52 8 59 30 65 40 11 50 10 50 -6z m-104 -10 c3 -8 2 -20 -2 -27 -5 -7 -9 -16 -10 -20 -1 -5 -2 -11 -3 -14 0 -3 -6 -2 -11 1 -8 5 -7 11 1 21 6 8 9 23 6 34 -6 23 11 28 19 5z m-186 -30 c0 -13 -20 -35 -32 -35 -4 0 -8 5 -8 11 0 5 5 7 12 3 7 -5 9 -1 6 13 -3 12 0 20 8 20 8 0 14 -5 14 -12z m190 -57 c0 -14 -86 -98 -100 -98 -17 0 -11 17 16 49 14 17 31 28 36 24 7 -3 8 -1 4 5 -3 6 2 15 11 21 24 14 33 14 33 -1z"/>
+                    <path d="M575 437 c-4 -10 -5 -21 -1 -24 10 -10 18 4 13 24 -4 17 -4 17 -12 0z"/>
+                    <path d="M956 832 c-3 -6 -1 -14 5 -17 14 -9 20 -2 10 14 -6 8 -11 9 -15 3z"/>
+                    <path d="M867 813 c-3 -5 8 -8 24 -9 16 -1 29 3 29 7 0 11 -47 12 -53 2z"/>
+                    <path d="M935 800 c3 -5 8 -10 11 -10 2 0 4 5 4 10 0 6 -5 10 -11 10 -5 0 -7 -4 -4 -10z"/>
+                    <path d="M834 755 c-18 -14 -18 -14 4 -8 12 3 22 9 22 14 0 12 -3 11 -26 -6z"/>
+                    <path d="M372 596 l-24 -23 23 -6 c27 -7 24 -9 33 26 8 33 -1 34 -32 3z"/>
+                    <path d="M311 536 c-25 -26 -21 -56 5 -35 7 6 11 15 8 21 -3 5 0 15 6 23 20 24 5 17 -19 -9z"/>
+                  </g>
+                </svg>
+              </div>
+
+              <div className="flex items-center gap-3 pt-1">
+                <div className="flex-1 h-px" style={{ background: "linear-gradient(90deg, transparent, rgba(109,197,50,0.18))" }} />
+                <span className="text-[9px] text-muted-foreground/25 tracking-[0.25em] uppercase">Crash Game</span>
+                <div className="flex-1 h-px" style={{ background: "linear-gradient(90deg, rgba(109,197,50,0.18), transparent)" }} />
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <button
+                type="button"
+                onClick={handleLogin}
+                disabled={redirecting}
+                className="w-full py-3 rounded font-black text-sm tracking-widest flex items-center justify-center gap-2 transition-all duration-200 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
+                style={{
+                  background: redirecting ? "rgba(109,197,50,0.3)" : "linear-gradient(135deg, #6DC532 0%, #00D46A 100%)",
+                  color: "#031A0C",
+                  fontFamily: "'Orbitron', monospace",
+                  boxShadow: redirecting ? "none" : "0 0 12px rgba(109,197,50,0.3)",
+                }}
+              >
+                {redirecting ? (
+                  <>
+                    <svg className="animate-spin" width="14" height="14" viewBox="0 0 24 24" fill="none">
+                      <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" strokeOpacity="0.25" />
+                      <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+                    </svg>
+                    REDIRECIONANDO...
+                  </>
+                ) : (
+                  <>
+                    <LogIn size={14} />
+                    ENTRAR
+                  </>
+                )}
+              </button>
+            </div>
+
+            <div className="pt-1 border-t border-border space-y-1.5">
+              <div className="flex justify-between text-[9px] text-muted-foreground/40">
+                <span>Realm: crash-game</span>
+                <span>localhost:8080</span>
+              </div>
+              <div className="flex justify-between text-[9px] text-muted-foreground/30">
+                <span>Usuário teste: player</span>
+                <span>player123</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="mt-8 text-[9px] text-muted-foreground/20 tracking-widest text-center">
+        JUNGLE GAMING · IGAMING PLATFORM · PROVABLY FAIR
+      </div>
+
+      <style>{`
+        @keyframes borderSpin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+      `}</style>
+    </div>
+  );
+}
