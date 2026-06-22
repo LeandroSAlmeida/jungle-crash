@@ -137,6 +137,23 @@ services:
       start_period: 15s
 
   # ---------------------------------------------------------------------------
+  # Wallet seed for the test user (runs once, exits)
+  # ---------------------------------------------------------------------------
+  wallets-seed:
+    build:
+      context: .
+      dockerfile: services/wallets/Dockerfile
+    env_file:
+      - ./services/wallets/.env
+    command: ["bun", "run", "src/scripts/seed-test-user.ts"]
+    restart: "no"
+    depends_on:
+      wallets:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+
+  # ---------------------------------------------------------------------------
   # Frontend (placeholder — candidate implements)
   # ---------------------------------------------------------------------------
   # frontend:
