@@ -32,8 +32,8 @@ export function PlayerHeader({ hash, history, balanceInCents, username, onLogout
         )}
       </div>
 
-      <div className="hidden md:flex items-center gap-1.5 overflow-x-auto max-w-md" style={{ scrollbarWidth: "none" }}>
-        <RoundHistory history={history} limit={10} />
+      <div className="hidden md:flex items-center overflow-x-auto max-w-md" style={{ scrollbarWidth: "none" }}>
+        <RoundHistory history={history} limit={10} wrap={false} />
       </div>
 
       <div className="flex items-center gap-4">
