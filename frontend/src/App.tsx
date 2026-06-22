@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { Toaster } from "sonner";
 import { useAuthStore } from "./stores/authStore";
 import { useWalletStore } from "./stores/walletStore";
 import { LoginPage } from "./pages/LoginPage";
@@ -21,9 +22,10 @@ export function App() {
     return <CallbackPage onCallback={completeLogin} />;
   }
 
-  if (!authenticated) {
-    return <LoginPage onLogin={login} />;
-  }
-
-  return <GamePage />;
+  return (
+    <>
+      {!authenticated ? <LoginPage onLogin={login} /> : <GamePage />}
+      <Toaster theme="dark" position="top-right" richColors />
+    </>
+  );
 }

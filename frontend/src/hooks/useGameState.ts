@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import {
   getCurrentRound,
   getRoundHistory,
@@ -25,6 +26,7 @@ export interface LiveBet {
 }
 
 export interface GameState {
+  loading: boolean;
   roundId: string | null;
   phase: RoundPhase | null;
   hash: string | null;
@@ -51,6 +53,7 @@ export function toLiveBet(bet: BetResponseDto): LiveBet {
 
 export function useGameState(): GameState {
   const [state, setState] = useState<GameState>({
+    loading: true,
     roundId: null,
     phase: null,
     hash: null,
@@ -70,7 +73,19 @@ export function useGameState(): GameState {
     let cancelled = false;
 
     (async () => {
-      const [{ round, bets }, history] = await Promise.all([getCurrentRound(), getRoundHistory()]);
+      let round, bets, history;
+      try {
+        const [current, roundHistory] = await Promise.all([getCurrentRound(), getRoundHistory()]);
+        round = current.round;
+        bets = current.bets;
+        history = roundHistory;
+      } catch {
+        if (!cancelled) {
+          toast.error("Não foi possível carregar o jogo. Verifique sua conexão.");
+          setState((prev) => ({ ...prev, loading: false }));
+        }
+        return;
+      }
       if (cancelled) {
         return;
       }
@@ -80,6 +95,7 @@ export function useGameState(): GameState {
       }
       setState((prev) => ({
         ...prev,
+        loading: false,
         roundId: round.id,
         phase: round.phase,
         hash: round.hash,
