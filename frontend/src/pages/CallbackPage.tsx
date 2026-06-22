@@ -20,7 +20,7 @@ export function CallbackPage({ onCallback }: CallbackPageProps) {
     }
 
     onCallback(code).finally(() => {
-      window.history.replaceState({}, "", "/");
+      window.location.replace("/");
     });
   }, [onCallback]);
 
