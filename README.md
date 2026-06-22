@@ -109,5 +109,4 @@ Cobertura obrigatória do desafio, mais alguns cenários que apareceram ao longo
 ## Limitações conhecidas
 
 - **Sem outbox/inbox transacional** — publicação de evento e mudança de estado não são atômicas (ver seção de saga acima). Bônus listado no desafio, não implementado.
-- **Responsividade mobile** — o layout principal (gráfico + painel lateral) não empilha em telas pequenas; foi priorizado o desktop dado o prazo.
 - **Evento `bet.debited`** — publicado pelo `Wallet` após um débito bem-sucedido, mas sem nenhum consumidor hoje (é informativo, pensado para uma futura tela de auditoria).
