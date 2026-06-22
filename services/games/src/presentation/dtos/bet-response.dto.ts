@@ -4,6 +4,7 @@ export class BetResponseDto {
   id!: string;
   roundId!: string;
   playerId!: string;
+  username?: string;
   amountInCents!: number;
   status!: BetStatus;
   cashoutMultiplier?: number;
@@ -15,6 +16,7 @@ export function toBetResponseDto(bet: Bet): BetResponseDto {
     id: bet.id,
     roundId: bet.roundId,
     playerId: bet.playerId,
+    username: bet.username ?? undefined,
     amountInCents: bet.amount.cents,
     status: bet.status,
     cashoutMultiplier: bet.cashoutMultiplier ?? undefined,

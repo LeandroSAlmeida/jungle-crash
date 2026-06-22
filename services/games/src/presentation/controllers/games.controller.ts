@@ -10,7 +10,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard, CurrentPlayer } from '@crash/auth';
+import { JwtAuthGuard, CurrentPlayer, CurrentUsername } from '@crash/auth';
 import { HealthCheckResponseDto } from '../dtos/health-check-response.dto';
 import { RoundResponseDto, toRoundResponseDto } from '../dtos/round-response.dto';
 import { BetResponseDto, toBetResponseDto } from '../dtos/bet-response.dto';
@@ -107,11 +107,12 @@ export class GamesController {
   @Post('bet')
   async placeBet(
     @CurrentPlayer() playerId: string,
+    @CurrentUsername() username: string | undefined,
     @Body() body: PlaceBetRequestDto,
   ): Promise<BetResponseDto> {
     try {
       const { round } = await this.getCurrentRoundUseCase.execute();
-      const bet = await this.placeBetUseCase.execute(round.id, playerId, body.amountInCents);
+      const bet = await this.placeBetUseCase.execute(round.id, playerId, body.amountInCents, username);
       return toBetResponseDto(bet);
     } catch (error) {
       if (error instanceof NoCurrentRoundError || error instanceof RoundNotFoundError) {

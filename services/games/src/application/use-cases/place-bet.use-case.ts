@@ -19,7 +19,7 @@ export class PlaceBetUseCase {
     private readonly eventEmitter: EventEmitter2,
   ) {}
 
-  async execute(roundId: string, playerId: string, amountInCents: number): Promise<Bet> {
+  async execute(roundId: string, playerId: string, amountInCents: number, username?: string): Promise<Bet> {
     const round = await this.roundRepository.findById(roundId);
     if (!round) {
       throw new RoundNotFoundError(roundId);
@@ -33,12 +33,12 @@ export class PlaceBetUseCase {
       throw new AlreadyBetThisRoundError(playerId);
     }
 
-    const bet = Bet.place(roundId, playerId, Money.fromCents(amountInCents));
+    const bet = Bet.place(roundId, playerId, Money.fromCents(amountInCents), username);
     await this.betRepository.save(bet);
 
     const event: BetPlacedEvent = { betId: bet.id, playerId, amountInCents };
     await this.eventPublisher.publish(ROUTING_KEYS.BET_PLACED, event);
-    this.eventEmitter.emit('bet.placed', { roundId, playerId, amountInCents });
+    this.eventEmitter.emit('bet.placed', { roundId, playerId, username: bet.username, amountInCents });
 
     return bet;
   }

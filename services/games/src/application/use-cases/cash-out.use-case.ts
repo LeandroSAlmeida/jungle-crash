@@ -37,6 +37,7 @@ export class CashOutUseCase {
     this.eventEmitter.emit('bet.cashed_out', {
       roundId,
       playerId,
+      username: bet.username,
       cashoutMultiplier: multiplier,
       payoutInCents: bet.payout.cents,
     });

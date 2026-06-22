@@ -6,3 +6,9 @@ export const CurrentPlayer = createParamDecorator((_: unknown, ctx: ExecutionCon
   const user = request.user as AuthenticatedPlayer;
   return user.playerId;
 });
+
+export const CurrentUsername = createParamDecorator((_: unknown, ctx: ExecutionContext): string | undefined => {
+  const request = ctx.switchToHttp().getRequest();
+  const user = request.user as AuthenticatedPlayer;
+  return user.username;
+});
