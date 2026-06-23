@@ -41,9 +41,7 @@ export function GamePage() {
       <PlayerHeader hash={hash} history={history} balanceInCents={balanceInCents} username={username} onLogout={logout} />
 
       <div className="flex-1 flex flex-col md:flex-row overflow-hidden min-h-0">
-        <div className="h-[42vh] shrink-0 md:h-auto md:flex-1 md:shrink flex">
-          <CrashChart phase={phase} multiplier={multiplier} crashPoint={crashPoint} countdownMs={countdownMs} />
-        </div>
+        <CrashChart phase={phase} multiplier={multiplier} crashPoint={crashPoint} countdownMs={countdownMs} />
 
         <div
           className="flex-1 md:flex-none md:w-72 xl:w-80 flex flex-col border-t md:border-t-0 md:border-l border-border overflow-hidden min-h-0"

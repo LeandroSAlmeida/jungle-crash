@@ -77,7 +77,7 @@ export function CrashChart({ phase, multiplier, crashPoint, countdownMs }: Crash
 
   return (
     <div
-      className="flex-1 relative overflow-hidden"
+      className="relative overflow-hidden h-[42vh] shrink-0 md:h-auto md:flex-1 md:shrink"
       style={{ background: "radial-gradient(ellipse 80% 70% at 20% 80%, #091808 0%, #060A0D 55%, #04080B 100%)" }}
     >
       <div className="absolute top-3 right-4 z-10 text-right">
