@@ -85,7 +85,6 @@ export async function handleCallback(code: string): Promise<void> {
 }
 
 export function logout(): void {
-  const idToken = sessionStorage.getItem(ID_TOKEN_KEY);
   sessionStorage.removeItem(ACCESS_TOKEN_KEY);
   sessionStorage.removeItem(REFRESH_TOKEN_KEY);
   sessionStorage.removeItem(ID_TOKEN_KEY);
@@ -93,7 +92,6 @@ export function logout(): void {
   const params = new URLSearchParams({
     client_id: CLIENT_ID,
     post_logout_redirect_uri: `${window.location.origin}/`,
-    ...(idToken ? { id_token_hint: idToken } : {}),
   });
   window.location.href = `${LOGOUT_ENDPOINT}?${params.toString()}`;
 }
