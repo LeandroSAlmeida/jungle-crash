@@ -86,7 +86,7 @@ O cashout segue o caminho inverso: `Game` marca a aposta como `CASHED_OUT` e pub
 
 **MikroORM v6 com decorators, não a API funcional da v7.** A v7 trocou decorators por `defineEntity()`; optei pela v6 por familiaridade com o modelo de entidades anotadas (próximo de JPA).
 
-**Provably fair: commit-reveal por rodada, com as seeds encadeadas entre rodadas.** Antes da fase de apostas, o servidor publica `hash = SHA256(serverSeed)`. Depois do crash, revela o `serverSeed` — qualquer jogador recalcula o hash e o crash point e confirma que bate. Além disso, a seed de cada rodada é derivada da seed da rodada anterior (`serverSeed_N = SHA256(serverSeed_{N-1})`), formando uma corrente verificável: dado o `serverSeed` de uma rodada antiga, é possível confirmar que a próxima realmente derivou dela, não foi escolhida depois. A primeira rodada do sistema ("genesis") usa uma seed aleatória, já que não há rodada anterior. Isso é uma simplificação deliberada do modelo usado por cassinos como Stake (que pré-publicam um hash "raiz" para um lote de milhares de rodadas futuras) — aqui o jogo roda continuamente, sem lotes pré-determinados, então o encadeamento incremental (rodada a rodada) é o que faz sentido.
+**Provably fair: commit-reveal por rodada, com as seeds encadeadas entre rodadas.** Antes da fase de apostas, o servidor publica `hash = SHA256(serverSeed)`. Depois do crash, revela o `serverSeed` — qualquer jogador recalcula o hash e o crash point e confirma que bate. Além disso, a seed de cada rodada é derivada da seed da rodada anterior (`serverSeed_N = SHA256(serverSeed_{N-1})`), formando uma corrente verificável: dado o `serverSeed` de uma rodada antiga, é possível confirmar que a próxima realmente derivou dela, não foi escolhida depois. A primeira rodada do sistema ("genesis") usa uma seed aleatória, já que não há rodada anterior. Isso é uma simplificação deliberada do modelo usado por cassinos como Stake (que pré-publicam um hash "raiz" para um lote de milhares de rodadas futuras) — aqui o jogo roda continuamente, sem lotes pré-determinados, então o encadeamento incremental (rodada a rodada) é o que faz sentido. O multiplicador em si segue `multiplicador = e^(0.000062 × ms_desde_o_início)` — a mesma fórmula é exibida na tela do jogo, no canto do gráfico, pra transparência.
 
 **Saga coreografada, não orquestrada.** Com só dois serviços e um fluxo linear (apostar → debitar → confirmar ou compensar), um orquestrador central seria complexidade sem benefício real. Cada serviço sabe reagir aos eventos que importam pra ele.
 
@@ -97,6 +97,12 @@ O cashout segue o caminho inverso: `Game` marca a aposta como `CASHED_OUT` e pub
 **Zustand para estado compartilhado no frontend, hooks locais para o resto.** Sessão (`authStore`) e saldo (`walletStore`) são lidos por múltiplos componentes ao mesmo tempo (header, controles de aposta) — Zustand evita buscar/duplicar esse estado em cada um. O estado da rodada em si (`useGameState`) fica num hook normal, porque só a página do jogo o usa.
 
 ---
+
+## Bônus implementados
+
+- **Auto cashout** — o jogador define um multiplicador alvo nos controles de aposta; o saque é disparado automaticamente assim que o multiplicador em tempo real (já sincronizado via WebSocket) atinge esse valor. Resolvido inteiramente no frontend, chamando o mesmo endpoint de cashout do saque manual — não precisou de nenhuma mudança no backend.
+- **Fórmula da curva na UI** — o gráfico do crash exibe `multiplicador = e^(0.000062 × ms)`, a mesma fórmula usada no cálculo real.
+- **Swagger/OpenAPI** — ambos os serviços expõem documentação interativa em `/docs`, com autenticação Bearer configurada.
 
 ## Testes
 

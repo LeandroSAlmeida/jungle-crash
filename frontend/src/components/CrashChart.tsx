@@ -80,6 +80,12 @@ export function CrashChart({ phase, multiplier, crashPoint, countdownMs }: Crash
       className="flex-1 relative overflow-hidden"
       style={{ background: "radial-gradient(ellipse 80% 70% at 20% 80%, #091808 0%, #060A0D 55%, #04080B 100%)" }}
     >
+      <div className="absolute top-3 right-4 z-10 text-right">
+        <span className="text-[9px] text-muted-foreground/40 font-mono">
+          multiplicador = e^(0.000062 × ms)
+        </span>
+      </div>
+
       <svg viewBox={`0 0 ${SVG_W} ${SVG_H}`} className="absolute inset-0 w-full h-full" preserveAspectRatio="none">
         <defs>
           <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
