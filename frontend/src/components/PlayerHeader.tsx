@@ -1,4 +1,5 @@
-import { Zap, Hash, Wallet } from "lucide-react";
+import { Zap, Hash, Wallet, Copy } from "lucide-react";
+import { toast } from "sonner";
 import { RoundHistory } from "./RoundHistory";
 import type { RoundResponseDto } from "../services/api";
 
@@ -25,10 +26,18 @@ export function PlayerHeader({ hash, history, balanceInCents, username, onLogout
           <span className="text-sm font-black tracking-[0.18em] text-foreground/30 uppercase">GAME</span>
         </div>
         {hash && (
-          <div className="hidden md:flex items-center gap-1.5 ml-3 pl-3 border-l border-border">
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText(hash);
+              toast.success("Hash copiado");
+            }}
+            title={hash}
+            className="hidden md:flex items-center gap-1.5 ml-3 pl-3 border-l border-border hover:opacity-80 transition-opacity"
+          >
             <Hash size={9} className="text-muted-foreground/50" />
             <span className="text-[9px] text-muted-foreground/40 font-mono">{hash.slice(0, 20)}…</span>
-          </div>
+            <Copy size={9} className="text-muted-foreground/30" />
+          </button>
         )}
       </div>
 
