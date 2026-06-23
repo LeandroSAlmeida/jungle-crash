@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import {
+  ApiError,
   getCurrentRound,
   getRoundHistory,
   type BetResponseDto,
@@ -79,9 +80,11 @@ export function useGameState(): GameState {
         round = current.round;
         bets = current.bets;
         history = roundHistory;
-      } catch {
+      } catch (error) {
         if (!cancelled) {
-          toast.error("Não foi possível carregar o jogo. Verifique sua conexão.");
+          if (!(error instanceof ApiError && error.status === 404)) {
+            toast.error("Não foi possível carregar o jogo. Verifique sua conexão.");
+          }
           setState((prev) => ({ ...prev, loading: false }));
         }
         return;
