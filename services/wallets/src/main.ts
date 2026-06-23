@@ -20,7 +20,7 @@ async function bootstrap(): Promise<void> {
   const orm = app.get(MikroORM);
   await orm.getMigrator().up();
 
-  const port = process.env.PORT;
+  const port = process.env.PORT ?? "4002";
   await app.listen(port, "0.0.0.0");
   console.log(`Wallets service running on port ${port}`);
 }
